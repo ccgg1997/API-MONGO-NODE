@@ -2,16 +2,20 @@ FROM node:14
 
 RUN mkdir -p /usr/src/app
 
+
 WORKDIR /usr/src/app
 
-COPY package*.json ./
 
+COPY package*.json ./
+RUN npm install -g nodemon
 RUN npm install
+
+
 
 
 COPY . .
 
-ENV WATCHPACK_POLLING=true
+
 
 EXPOSE 3000
 
