@@ -1,0 +1,25 @@
+version: "3"
+
+services:
+    web :
+      container_name: mongoapp
+      restart: always
+      build: .
+      ports:
+        - "5000:3000"
+      links:
+        - mongo 
+      volumes:
+        - .:/usr/src/app
+
+      environment:
+        - WATCHPACK_POLLING=true
+        
+    mongo:
+      container_name: mongodatabase
+      image: mongo
+      ports:
+        - "27017:27017"
+  
+      command: --quiet
+    
