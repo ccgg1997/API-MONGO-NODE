@@ -1,11 +1,16 @@
 const mongose = require('mongoose');
+require('dotenv').config();
 
-mongose.connect('mongodb://mongo/mydatabase',{
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
+
+mongose.set('strictQuery', false);
+
+mongose.connect(process.env.mongodburi)
     .then(db => console.log('DB is connected'))
     .catch(err => console.error(err))
+
+
+    
+
 
 mongose.set('strictQuery', false);
 
