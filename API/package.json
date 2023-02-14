@@ -5,12 +5,13 @@
   "main": "index.js",
   "scripts": {
     "start": "node src/index.js",
-    "dev": "nodemon --legacy-watch src/index.js"
+    "dev": "nodemon --legacy-watch src/index.js --exec babel-node"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "babel-node": "^0.0.1-security",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "mongoose": "^6.9.1",

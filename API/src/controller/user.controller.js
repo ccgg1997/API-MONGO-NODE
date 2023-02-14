@@ -43,11 +43,11 @@ const getOneUser = (req, res) => {
 //update user
 const updateUser = (req, res) => {  
     const {id} = req.params;
-    const {name, email, password, rol} = req.body;
+    const {name, email, password, rol,estado} = req.body;
     userSchema
-        .updateOne({_id: id}, { $set:{name, email, password, rol}})
+        .updateOne({_id: id}, { $set:{name, email, password, rol,estado}})
         .then((data) => res.json(data))
-        .then((error)=> res.json({message: error}));
+        .catch((error)=> res.json({message: error}));
 };
 
 //delete user
