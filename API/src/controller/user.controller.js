@@ -1,6 +1,6 @@
 const { request } = require('express');
 const userSchema = require('../models/user.schema');
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 const saltRounds = 10;
 
 
