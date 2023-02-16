@@ -6,7 +6,7 @@ services:
       restart: always
       build: .
       ports:
-        - "5000:3000"
+        - "5000:3002"
       links:
         - mongo 
       volumes:
@@ -19,7 +19,7 @@ services:
       container_name: mongodatabase
       image: mongo
       ports:
-        - "27017:27017"
+        - "27018:27017"
   
       command: --quiet
     

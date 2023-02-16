@@ -9,7 +9,7 @@ const path = require('path');
 require('./database');
 
 //settings
-const port=3000;
+const port=3002;
 app.set('json spaces', 2);  //to format the json    
 app.use(express.static(path.join(__dirname, 'public')));
 

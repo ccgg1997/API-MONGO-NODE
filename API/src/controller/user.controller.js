@@ -1,21 +1,32 @@
 const { request } = require('express');
 const userSchema = require('../models/user.schema');
-
+const bcrypt = require('bcrypt')
+const saltRounds = 10;
 
 
 //create user
 const createUser = (req, res) => { 
-    const userData = {
-        ...req.body,
-        estado:req.body.estado || true
-      };
-    const user = userSchema(userData);
-    user
-        .save()
-        .then((data) => res.json(data))
-        .catch((error)=> res.json({message: error}));
-    //res.json({ message: ' agregado' });
+    const plainPassword = req.body.password;
+    bcrypt.hash(plainPassword, saltRounds, (err, hashedPassword) => {
+        if (err) {
+            res.json({ message: err });
+        } else {
+            const userData = {
+                ...req.body,
+                password: hashedPassword,
+                estado: req.body.estado || true
+            };
+            const user = userSchema(userData);
+            user
+                .save()
+                .then((data) => res.json(data))
+                .catch((error) => res.json({ message: error }));
+        }
+    });
 };
+
+
+
 
 
 //get all user
