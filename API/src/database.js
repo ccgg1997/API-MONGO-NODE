@@ -1,7 +1,6 @@
 const mongose = require('mongoose');
 require('dotenv').config();
 
-
 mongose.set('strictQuery', false);
 
 mongose.connect(process.env.mongodburi)
@@ -9,8 +8,5 @@ mongose.connect(process.env.mongodburi)
     .catch(err => console.error(err))
 
 
-    
 
-
-mongose.set('strictQuery', false);
 

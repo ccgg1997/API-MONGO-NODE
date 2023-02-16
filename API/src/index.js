@@ -14,7 +14,7 @@ app.set('json spaces', 2);  //to format the json
 app.use(express.static(path.join(__dirname, 'public')));
 
 //middlewares
-app.use(morgan('ini'));
+app.use(morgan('dev'));
 app.use(express.urlencoded({extended: false}));   //to understand the data that the user sends
 app.use(express.json());
 app.use(bodyParser.json()) // para procesar datos enviados en formato JSON
