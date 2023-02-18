@@ -1,9 +1,11 @@
 const {Router}=require('express');
 const router=Router();
-const{createUser,getUser,getOneUser,updateUser,deleteUser}=require('../controller/user.controller');
+const{signUp,signIn,createUser,getUser,getOneUser,updateUser,deleteUser}=require('../controller/user.controller');
 
 //create usario
-router.post('/', createUser); 
+router.post('/',signUp);
+router.post('/',signIn);
+//router.post('/', createUser); 
 
 router.get('/', getUser);
 router.get('/:id', getOneUser);

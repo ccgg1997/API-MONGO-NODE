@@ -3,13 +3,14 @@ const app=express();
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const path = require('path');
-
+const {createRoles} = require('./libs/initialSetUp');
+createRoles();
 
 //importando el database
 require('./database');
 
 //settings
-const port=3002;
+const port=6000;
 app.set('json spaces', 2);  //to format the json    
 app.use(express.static(path.join(__dirname, 'public')));
 

@@ -17,6 +17,6 @@ COPY . .
 
 
 
-EXPOSE 3002
+EXPOSE 6000
 
 CMD [ "npm","run","dev"]

@@ -1,38 +1,66 @@
 const { request } = require('express');
 const userSchema = require('../models/user.schema');
-const bcrypt = require('bcryptjs')
+const bcrypt = require('bcryptjs');
 const saltRounds = 10;
+const jwt = require('jsonwebtoken');
+const config = require('../config');
+const Role = require('../models/roles.Schema');
 
+const signUp = async (req,res)=>{
+    
+    createUser(req,res);
+}
+
+const signIn = async (req,res)=>{
+    const userFound = await userSchema.findOne({email:req.body.email})
+    if(!userFound) return res.status(400).json({message:"user not found"})
+
+    console.log("userFound" + userFound)
+
+    res.json('')
+}
 
 //create user
-const createUser = (req, res) => { 
-    const plainPassword = req.body.password;
-    bcrypt.hash(plainPassword, saltRounds, (err, hashedPassword) => {
-        if (err) {
-            res.json({ message: err });
-        } else {
-            const userData = {
-                ...req.body,
-                password: hashedPassword,
-                estado: req.body.estado || true
-            };
-            const user = userSchema(userData);
-            user
-                .save()
-                .then((data) => res.json(data))
-                .catch((error) => res.json({ message: error }));
+const createUser = async (req, res) => {
+    try {
+        
+        const plainPassword = req.body.password;
+        const hashedPassword = await bcrypt.hash(plainPassword, saltRounds);
+        const {name, email,password, cedula, roles} = req.body;
+        const userData = {
+            name,
+            email,
+            password: hashedPassword,
+            cedula,
+            estado: req.body.estado || true
+        };
+        console.log("userData" + userData)
+        if(roles){
+           const foundRol = await Role.find({name:{$in:roles}})
+           userData.roles = foundRol.map(rol=>rol._id)
+           console.log("encontro rol")
+        } else{
+            const role = await Role.findOne({name:"user"})
+            userData.roles = [role._id]
+            console.log("no encontro rol")
         }
-    });
+
+        const user = userSchema(userData);
+        const userSaved = await user.save();
+        console.log("user saved" + userSaved)
+        const token = jwt.sign({id:userSaved._id},config.SECRET,{expiresIn:90000})
+        res.json(token);
+    } catch (error) {
+        res.json({ message: error });
+    }
 };
-
-
 
 
 
 //get all user
 const getUser = (req, res) => { 
     
-    userSchema
+    Role
         .find()
         .then((data) => res.json(data))
         .catch((error)=> res.json({message: error}));
@@ -74,4 +102,4 @@ const deleteUser = (req, res) => {
 };
 
 
-module.exports = {getUser, createUser,getOneUser,updateUser,deleteUser};
+module.exports = {signUp,signIn,getUser, createUser,getOneUser,updateUser,deleteUser};
