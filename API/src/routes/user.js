@@ -1,10 +1,12 @@
 const {Router}=require('express');
 const router=Router();
 const{signUp,signIn,createUser,getUser,getOneUser,updateUser,deleteUser}=require('../controller/user.controller');
-
-//create usario
-router.post('/',signUp);
-router.post('/',signIn);
+const {verifySignUp}=require('../middlewares');
+//create user
+router.post('/signup',
+[verifySignUp.checkDuplicateUsernameOrEmail,verifySignUp.checkRolesExisted],
+signUp);
+router.post('/signin',signIn);
 //router.post('/', createUser); 
 
 router.get('/', getUser);

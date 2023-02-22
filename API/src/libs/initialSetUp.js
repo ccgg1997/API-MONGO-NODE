@@ -1,4 +1,4 @@
-const Role = require('../models/roles.Schema');
+const {Role} = require('../models/roles.Schema');
 
 const createRoles = async () => {
 

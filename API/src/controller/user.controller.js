@@ -7,17 +7,24 @@ const config = require('../config');
 const Role = require('../models/roles.Schema');
 
 const signUp = async (req,res)=>{
-    
     createUser(req,res);
+    
 }
 
 const signIn = async (req,res)=>{
-    const userFound = await userSchema.findOne({email:req.body.email})
-    if(!userFound) return res.status(400).json({message:"user not found"})
+    const userFound = await userSchema.findOne({email:req.body.email});
+    if(!userFound) return res.status(400).json({message:"user not found"});
+    
+    
+    const CorrectPassword = await userSchema.comparePassword(req.body.password,userFound.password);
 
-    console.log("userFound" + userFound)
+    if(!CorrectPassword) return res.status(401).json({token:null,message:"invalid password"});
 
-    res.json('')
+    const token = jwt.sign({id:userFound._id},config.SECRET,{expiresIn:90000});
+    console.log("userFound" + userFound);
+
+
+    res.json({token:token})
 }
 
 //create user
@@ -60,7 +67,7 @@ const createUser = async (req, res) => {
 //get all user
 const getUser = (req, res) => { 
     
-    Role
+    userSchema
         .find()
         .then((data) => res.json(data))
         .catch((error)=> res.json({message: error}));

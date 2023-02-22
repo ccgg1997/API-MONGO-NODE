@@ -1,4 +1,5 @@
 const mongose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongose.Schema({ 
     name: { type: String, required: true },
@@ -17,5 +18,9 @@ const userSchema = new mongose.Schema({
     timestamps:true
 }
 );
+
+userSchema.statics.comparePassword = async (password,receivedPassword) => {
+    return await bcrypt.compare(password,receivedPassword);
+}
 
 module.exports = mongose.model('User', userSchema);
