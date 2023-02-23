@@ -9,15 +9,16 @@ const userSchema = require('../models/user.schema');
  * @returns 
  */
 const checkRolesExisted = (req, res, next) => {
-    if (req.body.rol) {
-        for (let i = 0; i < req.body.rol.length; i++) {
-            if (!ROLES.includes(req.body.rol[i])) {
+    if (req.body.roles) {
+        for (let i = 0; i < req.body.roles.length; i++) {
+            if (!ROLES.includes(req.body.roles[i])) {
                 return res.status(400).json({
-                    message: `Rol ${req.body.rol[i]} doestn exist`
+                    message: `Rol ${req.body.roles[i]} doestn exist`
                 })
             }
         }
     }
+
     next();
 }
 
@@ -29,16 +30,22 @@ const checkRolesExisted = (req, res, next) => {
  * @returns 
  */
 const checkDuplicateUsernameOrEmail = async (req, res, next) => {
-
-  const user = userSchema.findOne({name: req.body.name})
-
-  if(user) return res.status(400).json({message:"user already exist"});
-
-  const email= userSchema.findOne({email: req.body.email})
-
-  if(email) return res.status(400).json({message:"email already exist"});
-
-  next();
-}
-
+    try {
+      console.log(req.body);  
+      const user = await userSchema.findOne({ name: req.body.name });
+      if (user) {
+        return res.status(400).json({ message: "user already exists" });
+      }
+  
+      const email = await userSchema.findOne({ email: req.body.email });
+      if (email) {
+        return res.status(400).json({ message: "email already exists" });
+      }
+  
+      next();
+    } catch (err) {
+      return res.status(500).json({ message: err.message });
+    }
+  };
+  
 module.exports = {checkRolesExisted,checkDuplicateUsernameOrEmail}

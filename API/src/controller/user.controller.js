@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const saltRounds = 10;
 const jwt = require('jsonwebtoken');
 const config = require('../config');
-const Role = require('../models/roles.Schema');
+const {Role} = require('../models/roles.Schema');
 
 const signUp = async (req,res)=>{
     createUser(req,res);
@@ -41,7 +41,7 @@ const createUser = async (req, res) => {
             cedula,
             estado: req.body.estado || true
         };
-        console.log("userData" + userData)
+
         if(roles){
            const foundRol = await Role.find({name:{$in:roles}})
            userData.roles = foundRol.map(rol=>rol._id)
@@ -58,7 +58,7 @@ const createUser = async (req, res) => {
         const token = jwt.sign({id:userSaved._id},config.SECRET,{expiresIn:90000})
         res.json(token);
     } catch (error) {
-        res.json({ message: error });
+        res.json({ message: error});
     }
 };
 

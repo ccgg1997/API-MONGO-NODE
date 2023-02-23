@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const config = require('../config');
 const userSchema = require('../models/user.schema');
-const Role = require('../models/roles.Schema');
+const {Role} = require('../models/roles.Schema');
 /**
  * funcion que verifica el token de acceso
  * @param {*} req 

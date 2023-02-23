@@ -1,7 +1,7 @@
 const {Router}=require('express');
 const router=Router();
 const{signUp,signIn,createUser,getUser,getOneUser,updateUser,deleteUser}=require('../controller/user.controller');
-const {verifySignUp}=require('../middlewares');
+const {verifySignUp,authJwt}=require('../middlewares');
 //create user
 router.post('/signup',
 [verifySignUp.checkDuplicateUsernameOrEmail,verifySignUp.checkRolesExisted],
@@ -12,9 +12,9 @@ router.post('/signin',signIn);
 router.get('/', getUser);
 router.get('/:id', getOneUser);
 
-router.put('/:id', updateUser);
+router.put('/:id' ,updateUser);
 
-router.delete('/:id', deleteUser);
+router.delete('/:id',[authJwt.verifyToken,authJwt.isAdmin], deleteUser);
 
 
 module.exports = router;
