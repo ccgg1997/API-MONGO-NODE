@@ -4,7 +4,7 @@ const{signUp,signIn,createUser,getUser,getOneUser,updateUser,deleteUser}=require
 const {verifySignUp,authJwt}=require('../middlewares');
 //create user
 router.post('/signup',
-[verifySignUp.checkDuplicateUsernameOrEmail,verifySignUp.checkRolesExisted],
+[verifySignUp.checkDuplicateId,verifySignUp.checkRolesExisted],
 signUp);
 router.post('/signin',signIn);
 //router.post('/', createUser); 

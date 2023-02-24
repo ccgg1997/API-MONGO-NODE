@@ -5,8 +5,9 @@ const userSchema = new mongose.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true },
     password: { type: String, required: true },
-    cedula: { type: String, required: true },
-    estado: { type: Boolean, required: true },
+    id: { type: String, required: true },
+    deleted: { type: Boolean, default :false},
+    access: { type: String, default: false},
     roles:[{
         ref:"roles",
         type:mongose.Schema.Types.ObjectId

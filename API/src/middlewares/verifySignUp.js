@@ -29,17 +29,12 @@ const checkRolesExisted = (req, res, next) => {
  * @param {*} next 
  * @returns 
  */
-const checkDuplicateUsernameOrEmail = async (req, res, next) => {
+const checkDuplicateId = async (req, res, next) => {
     try {
-      console.log(req.body);  
-      const user = await userSchema.findOne({ name: req.body.name });
-      if (user) {
+
+      const id = await userSchema.findOne({ cedula: req.body.cedula });
+      if (id) {
         return res.status(400).json({ message: "user already exists" });
-      }
-  
-      const email = await userSchema.findOne({ email: req.body.email });
-      if (email) {
-        return res.status(400).json({ message: "email already exists" });
       }
   
       next();
@@ -48,4 +43,4 @@ const checkDuplicateUsernameOrEmail = async (req, res, next) => {
     }
   };
   
-module.exports = {checkRolesExisted,checkDuplicateUsernameOrEmail}
+module.exports = {checkRolesExisted,checkDuplicateId}

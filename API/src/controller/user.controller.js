@@ -33,12 +33,12 @@ const createUser = async (req, res) => {
         
         const plainPassword = req.body.password;
         const hashedPassword = await bcrypt.hash(plainPassword, saltRounds);
-        const {name, email,password, cedula, roles} = req.body;
+        const {name, email,password, id, roles} = req.body;
         const userData = {
             name,
             email,
             password: hashedPassword,
-            cedula,
+            id,
             estado: req.body.estado || true
         };
 
@@ -56,7 +56,7 @@ const createUser = async (req, res) => {
         const userSaved = await user.save();
         console.log("user saved" + userSaved)
         const token = jwt.sign({id:userSaved._id},config.SECRET,{expiresIn:90000})
-        res.json(token);
+        res.json({token:token});
     } catch (error) {
         res.json({ message: error});
     }
