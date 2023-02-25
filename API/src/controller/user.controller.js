@@ -38,7 +38,7 @@ const createUser = async (req, res) => {
             email,
             password: hashedPassword,
             id,
-            estado: req.body.estado || true
+            deleted: req.body.deleted || true
         };
 
         if(roles){
@@ -88,9 +88,9 @@ const getOneUser = (req, res) => {
 //update user
 const updateUser = (req, res) => {  
     const {id} = req.params;
-    const {name, email, password, rol,estado,access} = req.body;
+    const {name, email, password, rol,deleted,access} = req.body;
     userSchema
-        .updateOne({id: id}, { $set:{name, email, password, rol,estado,access}})
+        .updateOne({id: id}, { $set:{name, email, password, rol,deleted,access}})
         .then((data) => res.json(data))
         .catch((error)=> res.json({message: error}));
 };
@@ -98,10 +98,10 @@ const updateUser = (req, res) => {
 //delete user
 const deleteUser = (req, res) => {  
     const {id} = req.params;
-    const auxEstado =false;
+    const auxdeleted =false;
     
     userSchema
-        .updateOne({_id: id}, { $set:{estado: auxEstado}})
+        .updateOne({id: id}, { $set:{deleted: auxdeleted}})
         .then((data) => res.json(data))
         .catch((error)=> res.json({message: error}));
 
