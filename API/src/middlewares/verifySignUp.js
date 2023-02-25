@@ -32,7 +32,7 @@ const checkRolesExisted = (req, res, next) => {
 const checkDuplicateId = async (req, res, next) => {
     try {
 
-      const id = await userSchema.findOne({ cedula: req.body.cedula });
+      const id = await userSchema.findOne({ id: req.body.id });
       if (id) {
         return res.status(400).json({ message: "user already exists" });
       }

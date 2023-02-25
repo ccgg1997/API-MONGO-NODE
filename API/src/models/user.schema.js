@@ -7,7 +7,7 @@ const userSchema = new mongose.Schema({
     password: { type: String, required: true },
     id: { type: String, required: true },
     deleted: { type: Boolean, default :false},
-    access: { type: String, default: false},
+    access: { type: Boolean, default: false},
     roles:[{
         ref:"roles",
         type:mongose.Schema.Types.ObjectId

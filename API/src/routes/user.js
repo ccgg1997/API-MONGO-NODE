@@ -10,7 +10,7 @@ router.post('/signin',signIn);
 //router.post('/', createUser); 
 
 router.get('/', getUser);
-router.get('/:id', getOneUser);
+router.get('/:id',getOneUser);
 
 router.put('/:id' ,updateUser);
 

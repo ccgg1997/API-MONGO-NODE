@@ -12,19 +12,18 @@ const signUp = async (req,res)=>{
 }
 
 const signIn = async (req,res)=>{
-    const userFound = await userSchema.findOne({email:req.body.email});
-    if(!userFound) return res.status(400).json({message:"user not found"});
-    
-    
+    const userFound = await userSchema.findOne({id:req.body.id});
+    if(!userFound || !userFound.access) return res.status(400).json({message:"user not found"});
+
     const CorrectPassword = await userSchema.comparePassword(req.body.password,userFound.password);
 
     if(!CorrectPassword) return res.status(401).json({token:null,message:"invalid password"});
 
-    const token = jwt.sign({id:userFound._id},config.SECRET,{expiresIn:90000});
+    const token = jwt.sign({id:userFound._id},config.SECRET,{expiresIn:'20s'});
     console.log("userFound" + userFound);
 
 
-    res.json({token:token})
+    res.json({token:token});
 }
 
 //create user
@@ -55,8 +54,8 @@ const createUser = async (req, res) => {
         const user = userSchema(userData);
         const userSaved = await user.save();
         console.log("user saved" + userSaved)
-        const token = jwt.sign({id:userSaved._id},config.SECRET,{expiresIn:90000})
-        res.json({token:token});
+        //const token = jwt.sign({id:userSaved._id},config.SECRET,{expiresIn:90000})
+        //res.json({token:token});
     } catch (error) {
         res.json({ message: error});
     }
@@ -79,7 +78,7 @@ const getUser = (req, res) => {
 const getOneUser = (req, res) => { 
     const {id} = req.params;    
     userSchema
-        .findById(id)
+        .findOne({id:id})
         .then((data) => res.json(data))
         .catch((error)=> res.json({message: error}));
     //res.json({ message: ' agregado' });
@@ -89,9 +88,9 @@ const getOneUser = (req, res) => {
 //update user
 const updateUser = (req, res) => {  
     const {id} = req.params;
-    const {name, email, password, rol,estado} = req.body;
+    const {name, email, password, rol,estado,access} = req.body;
     userSchema
-        .updateOne({_id: id}, { $set:{name, email, password, rol,estado}})
+        .updateOne({id: id}, { $set:{name, email, password, rol,estado,access}})
         .then((data) => res.json(data))
         .catch((error)=> res.json({message: error}));
 };
