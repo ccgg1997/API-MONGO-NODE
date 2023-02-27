@@ -9,12 +9,12 @@ signUp);
 router.post('/signin',signIn);
 //router.post('/', createUser); 
 
-router.get('/', getUser);
+router.get('/',authJwt.verifyToken, getUser);
 router.get('/:id',getOneUser);
 
 router.put('/:id' ,updateUser);
 
-router.delete('/:id',[authJwt.verifyToken,authJwt.isAdmin], deleteUser);
+router.delete('/:id', deleteUser);
 
 
 module.exports = router;

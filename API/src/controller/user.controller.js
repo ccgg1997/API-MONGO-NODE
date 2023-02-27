@@ -13,7 +13,7 @@ const signUp = async (req,res)=>{
 
 const signIn = async (req,res)=>{
     const userFound = await userSchema.findOne({id:req.body.id});
-    if(!userFound || !userFound.access) return res.status(400).json({message:"user not found"});
+    if(!userFound || !userFound.access) return res.status(400).json({message:"user not found or access denied",token:null});
 
     const CorrectPassword = await userSchema.comparePassword(req.body.password,userFound.password);
 
