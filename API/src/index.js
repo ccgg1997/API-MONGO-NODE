@@ -5,12 +5,12 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const {createRoles} = require('./libs/initialSetUp');
 createRoles();
-
+const {swaggerDocs} = require('./routes/swagger');
 //importando el database
 require('./database');
 
 //settings
-const port=6000;
+const port=5000;
 app.set('json spaces', 2);  //to format the json    
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -26,5 +26,11 @@ app.use(require('./routes/index.routes'));
 app.use('/api/users', require('./routes/user'));
 
 //starting the server
-app.listen(port, () => {console.log('Server on port', port)});
+app.listen(port, () => {
+  console.log('Server on port', port);
+  swaggerDocs(app,port);
+});
+
+
+
 
