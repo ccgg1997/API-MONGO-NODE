@@ -1,4 +1,5 @@
 const express=require('express');
+const cors = require('cors');
 const app=express();
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
@@ -15,6 +16,7 @@ app.set('json spaces', 2);  //to format the json
 app.use(express.static(path.join(__dirname, 'public')));
 
 //middlewares
+app.use(cors());
 app.use(morgan('dev'));
 app.use(express.urlencoded({extended: false}));   //to understand the data that the user sends
 app.use(express.json());
