@@ -1,22 +1,22 @@
 const express=require('express');
-const cors = require('cors');
+///const cors = require('cors');
 const app=express();
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const path = require('path');
 const {createRoles} = require('./libs/initialSetUp');
 createRoles();
-const {swaggerDocs} = require('./routes/swagger');
+const {swaggerDocs} = require('./swagger');
 //importando el database
 require('./database');
 
 //settings
-const port=5000;
+const port=6000;
 app.set('json spaces', 2);  //to format the json    
 app.use(express.static(path.join(__dirname, 'public')));
 
 //middlewares
-app.use(cors());
+//app.use(cors());
 app.use(morgan('dev'));
 app.use(express.urlencoded({extended: false}));   //to understand the data that the user sends
 app.use(express.json());
