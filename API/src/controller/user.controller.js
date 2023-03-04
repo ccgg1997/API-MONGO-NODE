@@ -19,7 +19,10 @@ const signIn = async (req,res)=>{
 
     if(!CorrectPassword) return res.status(401).json({token:null,message:"invalid password"});
 
-    const token = jwt.sign({id:userFound._id},config.SECRET,{expiresIn:'20s'});
+    const token = jwt.sign({id:userFound._id},config.SECRET,{expiresIn:'500s'});
+    
+    
+
     console.log("userFound" + userFound);
 
 

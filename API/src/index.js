@@ -26,6 +26,7 @@ app.use(bodyParser.urlencoded({ extended: true })) // para procesar datos enviad
 //routes
 app.use(require('./routes/index.routes'));
 app.use('/api/users', require('./routes/user'));
+app.use('/api/verifyToken', require('./routes/verifyToken'));
 
 //starting the server
 app.listen(port, () => {
