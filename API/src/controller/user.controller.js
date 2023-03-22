@@ -17,7 +17,7 @@ const signIn = async (req,res)=>{
 
     const CorrectPassword = await userSchema.comparePassword(req.body.password,userFound.password);
 
-    if(!CorrectPassword) return res.status(401).json({token:null,message:"invalid password"});
+    if(!CorrectPassword) return res.status(400).json({token:null,message:"invalid password or user not found"});
 
     const token = jwt.sign({id:userFound._id},config.SECRET,{expiresIn:'500s'});
     
