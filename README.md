@@ -1,33 +1,33 @@
 # VISUALIZADOR INVENTARIO (API-MONGO-NODE)
 
-_Api rest para sistema de facturacion con mongodb (cluster en atlas) y node (18) <br>
-  API.proyecto para resolver el tema de inventario y facturación de la empresa Bolsas R._
+* _Api rest para sistema de facturacion con mongodb (cluster en atlas) y node (18) 
+*  Es un proyecto enfocado en resolver el tema de inventario y facturación de la empresa Bolsas R._
 
 ## Comenzando 🚀
 
-   *Clonar repositorio desde la terminal (git clone ...) 
-   *Abrir la terminal (ventana aparte o desde visual) 
-   *Entrar al directorio donde se descargo el repositorio 
-   *En el directorio ingresar a la carpeta del proyecto (API-MONGO-NODE), luego entrar a la carpeta API
+   * Clonar repositorio desde la terminal (git clone ...) 
+   * Abrir la terminal (ventana aparte o desde visual) 
+   * Entrar al directorio donde se descargo el repositorio 
+   * En el directorio ingresar a la carpeta del proyecto (API-MONGO-NODE), luego entrar a la carpeta API
 
 Mira **Deployment** para conocer como desplegar el proyecto.
 
 
 ### Pre-requisitos 📋
 
-_Docker Compose_
-_Credenciales para mondo en la nube o base de datos mongo local_
+* _Docker Compose_
+* _Credenciales para mondo en la nube o base de datos mongo local_
 
 ### Instalación 🔧
 
-  *Clonar repositorio desde la terminal (git clone ...) 
-  *Abrir la terminal (ventana aparte o desde visual) 
-  *Entrar al directorio donde se descargo el repositorio 
-  *En el directorio ingresar a la carpeta del proyecto (API-MONGO-NODE), luego entrar a la carpeta API
-  *Deberia ver en su terminal algo asi: DIRECCION_DONDE_DESCARGO_EL_REPO\API-MONGO-NODE\API 
-  *luego ejecute el comando: docker-compose build o docker compose build 
-  *por ultimo ejecute docker compose up
-  *ingresa a la api mediante la direccion localhost:5000
+  * Clonar repositorio desde la terminal (git clone ...) 
+  * Abrir la terminal (ventana aparte o desde visual) 
+  * Entrar al directorio donde se descargo el repositorio 
+  * En el directorio ingresar a la carpeta del proyecto (API-MONGO-NODE), luego entrar a la carpeta API
+  * Deberia ver en su terminal algo asi: DIRECCION_DONDE_DESCARGO_EL_REPO\API-MONGO-NODE\API 
+  * luego ejecute el comando: docker-compose build o docker compose build 
+  * por ultimo ejecute docker compose up
+  * ingresa a la api mediante la direccion localhost:5000
 
 
 ## Construido con 🛠️
@@ -66,5 +66,5 @@ Este proyecto está bajo la Licencia (Tu Licencia) - mira el archivo [LICENSE.md
 * Comenta a otros sobre este proyecto 📢
 * Invita una cerveza 🍺 o un café ☕ a alguien del equipo. 
 * Da las gracias públicamente 🤓.
-* Dona con cripto a esta dirección: `0xf253fc233333078436d111175e5a76a649890000`
+* Dona con cripto a esta dirección (binance) pay id: `329709027`
 * etc.
