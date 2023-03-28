@@ -25,9 +25,9 @@ app.use(bodyParser.json()) // para procesar datos enviados en formato JSON
 app.use(bodyParser.urlencoded({ extended: true })) // para procesar datos enviados en formato URL-encoded
 
 //routes
-//app.use(require('./routes/index.routes'));
 app.use('/api/users', require('./routes/user'));
 app.use('/api/verifyToken', require('./routes/verifyToken'));
+app.use('/api/products', require('./routes/product'));
 
 //starting the server
 app.listen(port, () => {
