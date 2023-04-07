@@ -18,12 +18,13 @@ Mira **Deployment** para conocer como desplegar el proyecto.
 * _Docker Compose_
 * _Credenciales para mondo en la nube o base de datos mongo local_
 
-### Instalación 🔧
-
-  * Clonar repositorio desde la terminal (git clone ...) 
-  * Abrir la terminal (ventana aparte o desde visual) 
-  * Entrar al directorio donde se descargo el repositorio 
-  * En el directorio ingresar a la carpeta del proyecto (API-MONGO-NODE), luego entrar a la carpeta API
+### Instalación (Deployment) 🔧
+ 
+  * Abrir la terminal (ventana aparte o desde visual) (generalmente con ctrl+ f1) y verificar ruta donde se quiere clonar el repo
+    ej:( c:user/descargas)
+  * Clonar repositorio desde la terminal (git clone https://github.com/ccgg1997/API-MONGO-NODE.git)
+  * Entrar al directorio donde se descargo el repositorio (c:user/descargas)
+  * En el directorio ingresar a la carpeta del proyecto (API-MONGO-NODE), luego entrar a la carpeta API (c:user/descargas/      API-MONGO-NODE/API)
   * Deberia ver en su terminal algo asi: DIRECCION_DONDE_DESCARGO_EL_REPO\API-MONGO-NODE\API 
   * luego ejecute el comando: docker-compose build o docker compose build 
   * por ultimo ejecute docker compose up

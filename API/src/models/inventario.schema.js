@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-const movimientoSchema = new mongoose.Schema({
+const movimientoSchema = new Schema({
   tipo: {
     type: String,
     enum: ['entrada', 'salida'],
@@ -12,29 +13,41 @@ const movimientoSchema = new mongoose.Schema({
   },
   cantidad: {
     type: Number,
-    required: true
+    required: true,
+    min: 0
   },
   usuario: {
     type: String,
+    required: true,
+    trim: true
+  },
+  productoId: {
+    type: Schema.Types.ObjectId,
+    ref: 'Producto',
     required: true
   }
 });
 
-const bodegaSchema = new mongoose.Schema({
-  bodega_id: {
+const bodegaSchema = new Schema({
+  bodegaId: {
     type: String,
     required: true
   },
   cantidad: {
     type: Number,
-    required: true
+    required: true,
+    min: 0
   },
   movimientos: [movimientoSchema]
 });
 
-const inventarioSchema = new mongoose.Schema({
-  producto_id: {
-    type: mongoose.Schema.Types.ObjectId,
+const inventarioSchema = new Schema({
+  codigoProducto: {
+    type: String,
+    required: true
+  },
+  productoId: {
+    type: Schema.Types.ObjectId,
     ref: 'Producto',
     required: true
   },
@@ -44,6 +57,8 @@ const inventarioSchema = new mongoose.Schema({
     required: true
   }
 });
+
+inventarioSchema.index({ codigoProducto: 1 });
 
 const Inventario = mongoose.model('Inventario', inventarioSchema);
 
