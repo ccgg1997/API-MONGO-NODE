@@ -40,51 +40,38 @@ router.get('/', getProduct);
  *     tags:
  *       - Products
  *     description: Crea un nuevo producto
- *     parameters:
- *       - name: producto_id
- *         in: query
- *         required: true
- *         schema:
- *           type: string
- *           example: P001
- *       - name: nombre
- *         in: query
- *         required: true
- *         schema:
- *           type: string
- *           example: Camisa Roja
- *       - name: precio_regular
- *         in: query
- *         required: true
- *         schema:
- *           type: number
- *           example: 19.99
- *       - name: precio_especial
- *         in: query
- *         required: false
- *         schema:
- *           type: array
- *           items:
+ *     requestBody:    # Define la solicitud que se enviará en el cuerpo de la petición
+ *       content:      # Define el tipo de contenido que se enviará
+ *         application/json:
+ *           schema:    # Define el esquema de los datos que se enviarán
  *             type: object
  *             properties:
- *               cliente_id:
+ *               producto_id:
  *                 type: string
- *                 example: 5f5a5d5c5b5a5f5e5d5c5b5a
- *               precio:
+ *                 example: P001
+ *               nombre:
+ *                 type: string
+ *                 example: Camisa Roja
+ *               precio_regular:
  *                 type: number
- *                 example: 14.99
- *       - name: familia_id
- *         in: query
- *         required: true
- *         schema:
- *           type: string
- *           example: F001
- *       - name: activo
- *         in: query
- *         required: false
- *         schema:
- *           type: boolean
- *           example: true
+ *                 example: 19.99
+ *               precio_especial:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     cliente_id:
+ *                       type: string
+ *                       example: 5f5a5d5c5b5a5f5e5d5c5b5a
+ *                     precio:
+ *                       type: number
+ *                       example: 14.99
+ *               familia_id:
+ *                 type: string
+ *                 example: F001
+ *               activo:
+ *                 type: boolean
+ *                 example: true
  *     responses:
  *       200:
  *         description: OK
@@ -133,6 +120,7 @@ router.get('/', getProduct);
  *       400:
  *         description: Error de validación de entrada
  */
+
 
 router.post('/',createProduct);
 
