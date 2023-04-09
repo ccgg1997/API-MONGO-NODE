@@ -22,7 +22,7 @@ const options = {
       res.send(swaggerSpec);
     });
 
-    console.log(`Swagger docs available at http://localhost:${port}/api/routes/docs`)
+    console.log(`Swagger docs available at http://localhost:5000`)
   };
 
   module.exports = {swaggerDocs};
