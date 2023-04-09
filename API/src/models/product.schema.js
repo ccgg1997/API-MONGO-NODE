@@ -6,6 +6,11 @@ const productSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  nombre: {
+    type: String,
+    required: true,
+  }
+  ,
   precio_regular: {
     type: Number,
     required: true,
@@ -18,7 +23,7 @@ const productSchema = new mongoose.Schema({
       },
       precio: {
         type: Number,
-        required: true,
+        required: false,
       },
     },
   ],
@@ -32,6 +37,5 @@ const productSchema = new mongoose.Schema({
   },
 });
 
-const Product = mongoose.model('Product', productSchema);
+module.exports = mongoose.model('Product', productSchema);
 
-module.exports = Product;
