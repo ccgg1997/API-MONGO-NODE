@@ -56,7 +56,7 @@ router.get('/', getProduct);
 
 /**
  * @swagger
- * /products/{producto_id}:
+ * /api/products/{producto_id}:
  *   get:
  *     tags:
  *       - Products
@@ -182,7 +182,7 @@ router.post('/',createProduct);
 
 /**
  * @openapi
- * /products/{producto_id}:
+ * /api/products/{producto_id}:
  *   delete:
  *     tags:
  *       - Products
@@ -236,7 +236,7 @@ router.delete('/:producto_id',deleteProduct);
 
 /**
  * @swagger
- * /product/{producto_id}:
+ * /api/products/{producto_id}:
  *   put:
  *     summary: Modificar producto por producto_id
  *     tags:
@@ -248,21 +248,21 @@ router.delete('/:producto_id',deleteProduct);
  *         required: true
  *         schema:
  *           type: string
- *       - in: body
- *         name: body
- *         description: Campos del producto a modificar
- *         required: true
- *         schema:
- *           type: object
- *           properties:
- *             nombre:
- *               type: string
- *             precio_regular:
- *               type: number
- *             precio_especial:
- *               type: number
- *             familia_id:
- *               type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nombre:
+ *                 type: string
+ *               precio_regular:
+ *                 type: number
+ *               precio_especial:
+ *                 type: number
+ *               familia_id:
+ *                 type: string
  *     responses:
  *       200:
  *         description: Producto modificado exitosamente
@@ -287,7 +287,6 @@ router.delete('/:producto_id',deleteProduct);
  *                 message:
  *                   type: string
  */
-
 router.put('/:producto_id',updateProduct);
 
 

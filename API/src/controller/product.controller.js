@@ -79,28 +79,32 @@ const createProduct = async (req, res) => {
   };
 
   //update product, update from database 
-  const updateProduct = (req, res) => {
-    const producto_id = req.params.producto_id;
-    const { nombre, precio_regular, precio_especial, familia_id } = req.body;
-  
+  const updateProduct = async (req, res) => {
     try {
-      productSchema.findOneAndUpdate(
+      const { producto_id } = req.params;
+      const { nombre, precio_regular, precio_especial, familia_id } = req.body;
+  
+      // Validar que al menos uno de los parámetros está presente
+      if (!nombre && !precio_regular && !precio_especial && !familia_id) {
+        return res.status(400).json({ message: 'Al menos un parámetro debe ser enviado.' });
+      }
+  
+      const updatedProduct = await productSchema.findOneAndUpdate(
         { producto_id: producto_id },
         { $set: { nombre, precio_regular, precio_especial, familia_id } },
-        { new: true }
-      )
-      .then((updatedProduct) => {
-        if (updatedProduct) {
-          res.json(updatedProduct);
-        } else {
-          res.status(404).json({ message: 'id no existe', producto_id: producto_id });
-        }
-      })
-      .catch((error) => res.json({ message: error }));
+        { new: true } // Devolver el producto actualizado en lugar del original
+      );
+  
+      if (updatedProduct) {
+        res.json(updatedProduct);
+      } else {
+        res.status(404).json({ message: 'id no existe', producto_id: producto_id });
+      }
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
   };
+  
   
   
   

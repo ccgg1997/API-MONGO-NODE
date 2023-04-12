@@ -14,18 +14,10 @@ const signUp = async (req,res)=>{
 const signIn = async (req,res)=>{
     const userFound = await userSchema.findOne({id:req.body.id});
     if(!userFound || !userFound.access) return res.status(400).json({message:"user not found or access denied",token:null});
-
-    const CorrectPassword = await userSchema.comparePassword(req.body.password,userFound.password);
-
+    const CorrectPassword = await userSchema.comparePassword( req.body.password, userFound.password);
     if(!CorrectPassword) return res.status(400).json({token:null,message:"invalid password or user not found"});
-
     const token = jwt.sign({id:userFound._id},config.SECRET,{expiresIn:'500s'});
-    
-    
-
     console.log("userFound" + userFound);
-
-
     res.json({token:token});
 }
 
@@ -59,8 +51,10 @@ const createUser = async (req, res) => {
         console.log("user saved" + userSaved)
         //const token = jwt.sign({id:userSaved._id},config.SECRET,{expiresIn:90000})
         //res.json({token:token});
+        res.status(200).json({ message: "User created successfully" });
     } catch (error) {
-        res.json({ message: error});
+        console.error(error);
+        res.status(500).json({ message: "Internal server error" });
     }
 };
 
