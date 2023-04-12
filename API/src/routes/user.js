@@ -276,7 +276,7 @@ router.get('/:id',authJwt.verifyToken,getOneUser);
  *                   type: string
  *                   description: Mensaje de error
  */
-router.put('/:id', updateUser);
+router.put('/:id', authJwt.isAdmin,updateUser);
 
 
 /**
@@ -329,7 +329,7 @@ router.put('/:id', updateUser);
  *                   type: string
  *                   description: Mensaje de error
  */
-router.delete('/:id', deleteUser);
+router.delete('/:id', authJwt.isAdmin ,deleteUser);
 
 
 module.exports = router;

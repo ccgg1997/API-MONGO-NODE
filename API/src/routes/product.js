@@ -200,7 +200,7 @@ router.get('/:producto_id',getOneProduct);
  *       400:
  *         description: Error de validación de entrada
  */
-router.post('/',createProduct);
+router.post('/',authJwt.isAdmin,createProduct);
 
 /**
  * @openapi
@@ -260,7 +260,7 @@ router.post('/',createProduct);
  *                   type: string
  *                   description: Mensaje de error.
  */
-router.delete('/:producto_id',deleteProduct);
+router.delete('/:producto_id',authJwt.isAdmin ,deleteProduct);
 
 /**
  * @swagger
@@ -321,7 +321,7 @@ router.delete('/:producto_id',deleteProduct);
  *                 message:
  *                   type: string
  */
-router.put('/:producto_id',updateProduct);
+router.put('/:producto_id',authJwt.isAdmin,updateProduct);
 
 
 
