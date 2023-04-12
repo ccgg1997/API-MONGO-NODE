@@ -77,6 +77,12 @@ router.get('/',authJwt.verifyToken, getProduct);
  *           type: string
  *         required: true
  *         description: ID del producto a buscar.
+ *       - in: header
+ *         name: x-access-token
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Token de autenticación JWT para acceder al endpoint
  *     responses:
  *       200:
  *         description: Producto encontrado.
@@ -107,6 +113,13 @@ router.get('/:producto_id',getOneProduct);
  *     tags:
  *       - Products
  *     summary: Crea un nuevo producto
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Token de autenticación JWT para acceder al endpoint
  *     requestBody:    # Define la solicitud que se enviará en el cuerpo de la petición
  *       content:      # Define el tipo de contenido que se enviará
  *         application/json:
@@ -203,6 +216,12 @@ router.post('/',createProduct);
  *         required: true
  *         schema:
  *           type: string
+ *       - in: header
+ *         name: x-access-token
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Token de autenticación JWT para acceder al endpoint
  *     responses:
  *       200:
  *         description: El producto se eliminó correctamente.
@@ -257,6 +276,12 @@ router.delete('/:producto_id',deleteProduct);
  *         required: true
  *         schema:
  *           type: string
+ *       - in: header
+ *         name: x-access-token
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Token de autenticación JWT para acceder al endpoint
  *     requestBody:
  *       required: true
  *       content:
