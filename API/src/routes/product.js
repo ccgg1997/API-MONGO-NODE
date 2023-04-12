@@ -1,5 +1,6 @@
 const {Router}=require('express');
 const { getProduct, createProduct,deleteProduct,getOneProduct,updateProduct } = require('../controller/product.controller');
+const {authJwt}=require('../middlewares');
 const router=Router();
 
 /**
@@ -9,6 +10,14 @@ const router=Router();
  *     tags:
  *       - Products
  *     summary: Retorna una lista de productos
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Token de autenticación JWT para acceder al endpoint
+ *       
  *     responses:
  *       200:
  *         description: OK
@@ -52,7 +61,7 @@ const router=Router();
  *       400:
  *         description: Error al obtener la lista de productos
  */
-router.get('/', getProduct);
+router.get('/',authJwt.verifyToken, getProduct);
 
 /**
  * @swagger
