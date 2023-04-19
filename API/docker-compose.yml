@@ -7,19 +7,18 @@ services:
       build: .
       ports:
         - "5000:6000"
-      links:
-        - mongo 
+      #links:
+        #- mongo 
       volumes:
         - .:/usr/src/app
 
       environment:
         - WATCHPACK_POLLING=true
         
-    mongo:
-      container_name: mongodatabase
-      image: mongo
-      ports:
-        - "27018:27017"
+    #mongo:
+      #container_name: mongodatabase
+      #image: mongo
+      #ports:
+        #- "27018:27017"
   
-      command: --quiet
-    
+      #command: --quiet
