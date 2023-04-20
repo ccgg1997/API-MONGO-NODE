@@ -46,7 +46,7 @@ const router=Router();
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/',getInventario);
+router.get('/',[authJwt.verifyToken,authJwt.isAdmin],getInventario);
 
 /**
  * @openapi
@@ -57,18 +57,18 @@ router.get('/',getInventario);
  *     summary: Obtiene un registro de inventario por ID de producto
  *     description: Devuelve un registro de inventario por ID de producto si está activo.
  *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Token de autenticación JWT para acceder al endpoint. 
  *       - in: path
  *         name: producto_id
  *         schema:
  *           type: string
  *         required: true
  *         description: ID del producto en el inventario.
- *       - in: header
- *         name: x-access-token
- *         schema:
- *           type: string
- *         required: true
- *         description: Token de autenticación JWT para acceder al endpoint.
  *     responses:
  *       '200':
  *         description: Éxito. Devuelve un registro de inventario.
@@ -111,10 +111,56 @@ router.get('/',getInventario);
  *       '500':
  *         description: Error interno del servidor.
  */
-router.get('/:producto_id',getOneInventario);
+router.get('/:producto_id',[authJwt.verifyToken,authJwt.isAdmin],getOneInventario);
 
 
-router.post('/',createInventario);
+/**
+ * @swagger
+ * /api/inventario:
+ *   post:
+ *     summary: Crea un nuevo registro de inventario
+ *     tags: 
+ *       - Inventario
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Token de autenticación JWT para acceder al endpoint
+ *     requestBody:
+ *       description: Objeto JSON que contiene los datos del inventario
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               codProducto:
+ *                 type: string
+ *                 description: ID único del inventario
+ *               productoId:
+ *                 type: string
+ *                 format: ObjectId
+ *                 description: ID del producto
+ *               bodegas:
+ *                 type: string
+ *                 format: ObjectId
+ *                 description: ID de la bodega
+ *               cantidadTotal:
+ *                 type: number
+ *                 description: cantidad total de productos en la Bodega
+ *     responses:
+ *       '201':
+ *         description: Registro de inventario creado con éxito
+ *       '400':
+ *         description: Parámetros inválidos proporcionados en la solicitud
+ *       '500':
+ *         description: Error interno del servidor
+ *     security:
+ *       - bearerAuth: []
+ */
+router.post('/',[authJwt.verifyToken,authJwt.isAdmin],createInventario);
 
 
 module.exports=router;

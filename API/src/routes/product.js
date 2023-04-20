@@ -71,18 +71,18 @@ router.get('/',authJwt.verifyToken, getProduct);
  *       - Products
  *     summary: Obtiene un producto por su ID.
  *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Token de autenticación JWT para acceder al endpoint       
  *       - in: path
  *         name: producto_id
  *         schema:
  *           type: string
  *         required: true
  *         description: ID del producto a buscar.
- *       - in: header
- *         name: x-access-token
- *         schema:
- *           type: string
- *         required: true
- *         description: Token de autenticación JWT para acceder al endpoint
  *     responses:
  *       200:
  *         description: Producto encontrado.
@@ -104,7 +104,7 @@ router.get('/',authJwt.verifyToken, getProduct);
  *                   type: string
  *                   example: P001
  */
-router.get('/:producto_id',getOneProduct);
+router.get('/:producto_id',[authJwt.verifyToken,authJwt.isAdmin],getOneProduct);
 
 /**
  * @openapi
@@ -200,7 +200,7 @@ router.get('/:producto_id',getOneProduct);
  *       400:
  *         description: Error de validación de entrada
  */
-router.post('/',authJwt.isAdmin,createProduct);
+router.post('/',[authJwt.verifyToken, authJwt.isAdmin],createProduct);
 
 /**
  * @openapi
@@ -210,18 +210,18 @@ router.post('/',authJwt.isAdmin,createProduct);
  *       - Products
  *     summary: Elimina un producto de la base de datos.
  *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Token de autenticación JWT para acceder al endpoint 
  *       - in: path
  *         name: producto_id
  *         description: ID del producto a eliminar.
  *         required: true
  *         schema:
  *           type: string
- *       - in: header
- *         name: x-access-token
- *         schema:
- *           type: string
- *         required: true
- *         description: Token de autenticación JWT para acceder al endpoint
  *     responses:
  *       200:
  *         description: El producto se eliminó correctamente.
@@ -260,7 +260,7 @@ router.post('/',authJwt.isAdmin,createProduct);
  *                   type: string
  *                   description: Mensaje de error.
  */
-router.delete('/:producto_id',authJwt.isAdmin ,deleteProduct);
+router.delete('/:producto_id',[authJwt.verifyToken,authJwt.isAdmin],deleteProduct);
 
 /**
  * @swagger
@@ -270,18 +270,18 @@ router.delete('/:producto_id',authJwt.isAdmin ,deleteProduct);
  *     tags:
  *       - Products
  *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Token de autenticación JWT para acceder al endpoint 
  *       - in: path
  *         name: producto_id
  *         description: ID del producto a modificar
  *         required: true
  *         schema:
  *           type: string
- *       - in: header
- *         name: x-access-token
- *         schema:
- *           type: string
- *         required: true
- *         description: Token de autenticación JWT para acceder al endpoint
  *     requestBody:
  *       required: true
  *       content:
@@ -321,7 +321,7 @@ router.delete('/:producto_id',authJwt.isAdmin ,deleteProduct);
  *                 message:
  *                   type: string
  */
-router.put('/:producto_id',authJwt.isAdmin,updateProduct);
+router.put('/:producto_id',[authJwt.verifyToken,authJwt.isAdmin],updateProduct);
 
 
 

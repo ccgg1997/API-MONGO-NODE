@@ -38,6 +38,12 @@ router.get('/',getBodega);
  *     summary: Obtiene una bodega activa por su ID
  *     tags: [Bodega]
  *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Token de autenticación JWT para acceder al endpoint 
  *       - in: path
  *         name: idBodega
  *         schema:
@@ -72,7 +78,7 @@ router.get('/',getBodega);
  *                   type: string
  *                   example: Error al obtener bodega
  */
-router.get('/:bodegaId',getOneBodega);
+router.get('/:bodegaId',[authJwt.verifyToken,authJwt.isAdmin],getOneBodega);
 
 /**
  * @swagger
@@ -81,6 +87,13 @@ router.get('/:bodegaId',getOneBodega);
  *     summary: Crea un nuevo registro de Bodega
  *     tags: 
  *       - Bodega
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Token de autenticación JWT para acceder al endpoint
  *     requestBody:
  *       description: Objeto JSON que contiene los datos de la Bodega
  *       required: true
@@ -110,7 +123,7 @@ router.get('/:bodegaId',getOneBodega);
  *     security:
  *       - bearerAuth: []
  */
-router.post('/',createBodega);
+router.post('/',[authJwt.verifyToken,authJwt.isAdmin],createBodega);
 
 /**
  * @swagger
@@ -121,6 +134,12 @@ router.post('/',createBodega);
  *       - Bodega
  *     description: Permite actualizar la cantidad y los movimientos de una bodega en particular.
  *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Token de autenticación JWT para acceder al endpoint
  *       - in: path
  *         name: bodegaId
  *         schema:
@@ -169,7 +188,7 @@ router.post('/',createBodega);
  *                 message:
  *                   type: string
  */
-router.put('/:bodegaId',updateBodega);
+router.put('/:bodegaId',[authJwt.verifyToken,authJwt.isAdmin],updateBodega);
 
 /**
  * @openapi
@@ -179,6 +198,12 @@ router.put('/:bodegaId',updateBodega);
  *     summary: Elimina un registro de bodega existente.
  *     tags: [Bodega]
  *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Token de autenticación JWT para acceder al endpoint 
  *       - in: path
  *         name: idBodega
  *         schema:
@@ -191,6 +216,6 @@ router.put('/:bodegaId',updateBodega);
  *       404:
  *         description: No se encontró ningún registro de bodega con ese ID de bodega.
  */
-router.delete('/:bodegaId',deleteBodega);  
+router.delete('/:bodegaId',[authJwt.verifyToken,authJwt.isAdmin],deleteBodega);  
 
 module.exports=router;

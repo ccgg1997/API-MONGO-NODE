@@ -4,34 +4,60 @@ const{signUp,signIn,createUser,getUser,getOneUser,updateUser,deleteUser}=require
 const {verifySignUp,authJwt}=require('../middlewares');
 //create user
 
+
 /**
- * @openapi
+ * @swagger
  * /api/users/signup:
- *   get:
- *    tags:
- *     - Users
- *    description: registra un usuario en el sistema
- *    responses:
- *     200:
- *       description: OK
- *       content: 
- *        application/json:
- *         schema:
- *          type: object
- *          properties:
- *           id:
- *            type: string
- *            description: id del usuario
- *           password:
- *            type: string
- *            description: password del usuario
- *           data:
- *            type: array
- *            items:
+ *   post:
+ *     tags:
+ *      - Users
+ *     summary: Crear un usuario  
+ *     description: Endpoint que permite crear un usuario con su ID,contrasenia y demas datos
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
  *             type: object
- *            responses:
- *            400:
- *            description: Error de validación de entrada
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Nombre del usuario
+ *               email:
+ *                 type: string
+ *                 description: Correo del usuario
+ *               password:
+ *                 type: string
+ *                 description: Contraseña del usuario
+ *               id:
+ *                 type: string
+ *                 description: ID del usuario
+ *               roles:
+ *                 type: array
+ *                 description: Roles del usuario
+ *     responses:
+ *       200:
+ *         description: Token de autenticación generado con éxito
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                   description: Token de autenticación generado
+ *       400:
+ *         description: Error de autenticación
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Mensaje de error
+ *                 token:
+ *                   type: null
  */
 router.post('/signup',
 [verifySignUp.checkDuplicateId,verifySignUp.checkRolesExisted],
@@ -54,8 +80,10 @@ signUp);
  *             properties:
  *               id:
  *                 type: string
+ *                 description: ID del usuario
  *               password:
  *                 type: string
+ *                 description: Contraseña del usuario
  *     responses:
  *       200:
  *         description: Token de autenticación generado con éxito
@@ -139,12 +167,19 @@ router.get('/', getUser);
  *     summary: Obtener un usuario por su ID
  *     description: Endpoint que permite obtener un usuario por su ID
  *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Token de autenticación JWT para acceder al endpoint 
  *       - in: path
  *         name: id
  *         schema:
  *           type: string
  *         required: true
  *         description: ID del usuario a obtener
+ *         
  *     responses:
  *       200:
  *         description: Usuario obtenido con éxito
@@ -190,18 +225,18 @@ router.get('/:id',authJwt.verifyToken,getOneUser);
  *     summary: Actualizar un usuario existente
  *     description: Endpoint que actualiza los datos de un usuario existente en el sistema
  *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Token de autenticación JWT para acceder al endpoint 
  *       - in: path
  *         name: id
  *         schema:
  *           type: string
  *         required: true
  *         description: ID del usuario a actualizar
- *       - in: header
- *         name: Authorization
- *         schema:
- *           type: string
- *         required: true
- *         description: Token de autenticación JWT para acceder al endpoint
  *     requestBody:
  *       description: Datos del usuario a actualizar
  *       required: true
@@ -288,6 +323,12 @@ router.put('/:id', authJwt.isAdmin,updateUser);
  *     summary: Eliminar un usuario
  *     description: Endpoint para eliminar un usuario existente en el sistema
  *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Token de autenticación JWT para acceder al endpoint
  *       - in: path
  *         name: cedula
  *         required: true
