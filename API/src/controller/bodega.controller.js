@@ -28,14 +28,14 @@ const getOneBodega = async (req, res) => {
 
 // Crear nuevo Bodega
 const createBodega = async (req, res) => {
-    const { bodegaId, cantidad, movimientos } = req.body;
+    const { bodegaId, cantidadTotal, cantidadProducto } = req.body;
   
     try {
       // Crear nuevo registro de Bodega
       const nuevaBodega = bodegaSchema({
         bodegaId,
-        cantidad,
-        movimientos,
+        cantidadTotal,
+        cantidadProducto,
       });
       console.log(nuevaBodega);
       // Guardar registro en la base de datos
@@ -52,17 +52,17 @@ const createBodega = async (req, res) => {
 const updateBodega = async (req, res) => {
   try {
     const { bodegaId } = req.params;
-    const { cantidad, movimientos, activo } = req.body;
-    console.log("checkpoint updateBodega:: ", bodegaId, cantidad, movimientos, activo);
+    const { activo, cantidadTotal, cantidadProducto } = req.body;
+    console.log("checkpoint updateBodega:: ", bodegaId, cantidadTotal, cantidadProducto, activo);
 
     // Validar que al menos uno de los parámetros está presente
-    if (!cantidad && !movimientos && activo === undefined) {
+    if (!cantidadTotal && !cantidadProducto && activo === undefined) {
       return res.status(400).json({ message: 'Al menos un parámetro debe ser enviado.' });
     }
 
     const updatedBodega = await bodegaSchema.findOneAndUpdate(
       { bodegaId: bodegaId },
-      { $set: { cantidad, movimientos, activo } },
+      { $set: { cantidadTotal:cantidadTotal, cantidadProducto:cantidadProducto, activo:activo } },
       { new: true } // Devolver la bodega actualizada en lugar de la original
     );
 

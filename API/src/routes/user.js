@@ -81,9 +81,11 @@ signUp);
  *               id:
  *                 type: string
  *                 description: ID del usuario
+ *                 example: 99
  *               password:
  *                 type: string
  *                 description: Contraseña del usuario
+ *                 example: 1234
  *     responses:
  *       200:
  *         description: Token de autenticación generado con éxito

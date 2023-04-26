@@ -1,36 +1,40 @@
-const mongoose = require('mongoose');
-const { Schema } = mongoose;
+// const mongoose = require('mongoose');
+// const { Schema } = mongoose;
 
-const inventarioSchema = new Schema({
-  codigoProducto: {
-    type: String,
-    required: true
-  },
-  productoId: {
-    type: Schema.Types.ObjectId,
-    ref: 'Producto',
-    required: true
-  },
-  bodegas:{
-    type: Schema.Types.ObjectId,
-    ref: 'Bodega',
-    required: true,
-  },
-  activo: {
-    type: Boolean,
-    required: true
-  },
-  cantidadTotal: {
-    type: Number,
-    required: true,
-    min: 0
-  }
-});
+// const inventarioSchema = new Schema({
+//   codProducto: {
+//     type: String,
+//     required: true
+//   },
+//   productoId: {
+//     type: Schema.Types.ObjectId,
+//     ref: 'Producto'
+//   },
+//   bodegas:[{
+//     nombreBodega: {
+//       type: String,
+  
+//     },
+//     cantidad: {
+//       type: Number,
+//       min: 0
+//     }
+//   }],
+//   activo: {
+//     type: Boolean,
+//     required: true
+//   },
+//   cantidadTotal: {
+//     type: Number,
+//     min: 0
+//   }
+// });
 
-inventarioSchema.index({ codigoProducto: 1 });
 
-const Inventario = mongoose.model('Inventario', inventarioSchema);
+// inventarioSchema.index({ codigoProducto: 1 });
 
-module.exports = {Inventario};
+
+
+// module.exports = mongoose.model('Inventario', inventarioSchema);;
 
 

@@ -6,12 +6,24 @@ const bodegaSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  cantidad: {
+  bodegaNombre: {
+    type: String,
+    required: true
+  },
+  cantidadTotal: {
     type: Number,
     required: true,
     min: 0
   },
-  movimientos: [String],
+  cantidadProducto: [{
+    nombreProducto: {
+    type:String,
+    },
+    cantidad: {
+      type: Number,
+      min: 0
+    }
+  }],
   activo: {
     type: Boolean,
     default: true

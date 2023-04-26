@@ -24,21 +24,27 @@ const getOneInventario = async (req, res) => {
     res.json({ message: error });
     }
 };
-const Inventario = require('../models/inventario.schema');
+
 
 // Crear nuevo inventario
-const createInventario= async (req, res) =>{
-  const { codigoProducto, productoId, cantidadTotal, bodegas } = req.body;
-
+const createInventario= async(req, res) =>{
+ 
   try {
+    //const {  productoId, cantidadTotal, bodegas } = req.body;
+    const codProducto = req.body.codProducto;
+    const productoId = req.body.productoId;
+    const cantidadTotal = req.body.cantidadTotal;
+    const bodegas = req.body.bodegas;
     // Crear nuevo registro de inventario
-    const nuevoInventario = new Inventario({
-      codigoProducto,
+    const activo= true;
+    const nuevoInventario = inventarioSchema({
+      codProducto,
       productoId,
       cantidadTotal,
       bodegas,
-      activo: true
+      activo
     });
+    console.log("nuevoinvetarrio:",nuevoInventario, "codigo pructo:" , codProducto, productoId, cantidadTotal, bodegas, activo);
 
     // Guardar registro en la base de datos
     await nuevoInventario.save();

@@ -9,6 +9,13 @@ const router=Router();
  *   get:
  *     summary: Obtiene todas las bodegas activas
  *     tags: [Bodega]
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Token de autenticación JWT para acceder al endpoint
  *     responses:
  *       200:
  *         description: Lista de todas las bodegas activas
@@ -16,8 +23,6 @@ const router=Router();
  *           application/json:
  *             schema:
  *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Bodega'
  *       500:
  *         description: Error interno del servidor
  *         content:
@@ -29,7 +34,7 @@ const router=Router();
  *                   type: string
  *                   example: Error al obtener bodegas
  */
-router.get('/',getBodega);
+router.get('/',[authJwt.verifyToken],getBodega);
 
 /**
  * @swagger
@@ -56,7 +61,6 @@ router.get('/',getBodega);
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Bodega'
  *       404:
  *         description: No se encontró ninguna bodega con ese ID
  *         content:
@@ -78,7 +82,7 @@ router.get('/',getBodega);
  *                   type: string
  *                   example: Error al obtener bodega
  */
-router.get('/:bodegaId',[authJwt.verifyToken,authJwt.isAdmin],getOneBodega);
+router.get('/:bodegaId',[authJwt.verifyToken],getOneBodega);
 
 /**
  * @swagger
@@ -110,8 +114,6 @@ router.get('/:bodegaId',[authJwt.verifyToken,authJwt.isAdmin],getOneBodega);
  *                 description: Cantidad total de productos en la Bodega
  *               movimientos:
  *                 type: array
- *                 items:
- *                   $ref: '#/components/schemas/Movimiento'
  *                 description: Lista de los movimientos realizados en la Bodega
  *     responses:
  *       '201':
@@ -159,8 +161,6 @@ router.post('/',[authJwt.verifyToken,authJwt.isAdmin],createBodega);
  *                 description: Cantidad a actualizar en la bodega.
  *               movimientos:
  *                 type: array
- *                 items:
- *                   $ref: '#/components/schemas/Movimiento'
  *                 description: Lista de movimientos a actualizar en la bodega.
  *     responses:
  *       200:
@@ -168,7 +168,6 @@ router.post('/',[authJwt.verifyToken,authJwt.isAdmin],createBodega);
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Bodega'
  *       404:
  *         description: No se encontró ninguna bodega con ese ID.
  *         content:
@@ -188,7 +187,7 @@ router.post('/',[authJwt.verifyToken,authJwt.isAdmin],createBodega);
  *                 message:
  *                   type: string
  */
-router.put('/:bodegaId',[authJwt.verifyToken,authJwt.isAdmin],updateBodega);
+router.put('/:bodegaId',[authJwt.verifyToken],updateBodega);
 
 /**
  * @openapi

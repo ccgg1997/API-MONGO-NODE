@@ -46,7 +46,7 @@ const router=Router();
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/',[authJwt.verifyToken,authJwt.isAdmin],getInventario);
+router.get('/',[authJwt.verifyToken],getInventario);
 
 /**
  * @openapi
@@ -111,7 +111,7 @@ router.get('/',[authJwt.verifyToken,authJwt.isAdmin],getInventario);
  *       '500':
  *         description: Error interno del servidor.
  */
-router.get('/:producto_id',[authJwt.verifyToken,authJwt.isAdmin],getOneInventario);
+router.get('/:producto_id',[authJwt.verifyToken],getOneInventario);
 
 
 /**
@@ -144,12 +144,20 @@ router.get('/:producto_id',[authJwt.verifyToken,authJwt.isAdmin],getOneInventari
  *                 format: ObjectId
  *                 description: ID del producto
  *               bodegas:
- *                 type: string
- *                 format: ObjectId
- *                 description: ID de la bodega
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     nombreBodega:
+ *                       type: string
+ *                       description: Nombre de la bodega
+ *                     cantidad:
+ *                       type: number
+ *                       description: Cantidad de productos en la bodega
+ *                 description: Arreglo de objetos con información detallada de las bodegas y la cantidad de productos en cada una
  *               cantidadTotal:
  *                 type: number
- *                 description: cantidad total de productos en la Bodega
+ *                 description: Cantidad total de productos en todas las bodegas
  *     responses:
  *       '201':
  *         description: Registro de inventario creado con éxito
@@ -160,7 +168,7 @@ router.get('/:producto_id',[authJwt.verifyToken,authJwt.isAdmin],getOneInventari
  *     security:
  *       - bearerAuth: []
  */
-router.post('/',[authJwt.verifyToken,authJwt.isAdmin],createInventario);
+router.post('/',[authJwt.verifyToken],createInventario);
 
 
 module.exports=router;

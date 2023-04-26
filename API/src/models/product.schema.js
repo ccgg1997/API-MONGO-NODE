@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const productSchema = new mongoose.Schema({
+const productSchema = mongoose.Schema({
   producto_id: {
     type: String,
     required: true,
@@ -18,8 +18,9 @@ const productSchema = new mongoose.Schema({
   precio_especial: [
     {
       cliente_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Cliente',
+        type: String,
+        // type: mongoose.Schema.Types.ObjectId,
+        // ref: 'Cliente',
       },
       precio: {
         type: Number,
@@ -35,6 +36,20 @@ const productSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  bodegas:[{
+    nombreBodega: {
+      type: String,
+  
+    },
+    cantidad: {
+      type: Number,
+      min: 0
+    }
+  }], 
+  cantidadTotal: {
+    type: Number,
+    min: 0
+  }
 });
 
 module.exports = mongoose.model('Product', productSchema);
