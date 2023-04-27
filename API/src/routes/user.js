@@ -205,7 +205,7 @@ router.get('/', getUser);
  *                 access:
  *                   type: boolean
  *                   description: Indica si el usuario tiene acceso o no
- *       404:
+ *       404:        
  *         description: Usuario no encontrado
  *         content:
  *           application/json:
