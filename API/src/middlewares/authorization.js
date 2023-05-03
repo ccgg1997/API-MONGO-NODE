@@ -14,12 +14,13 @@ const verifyToken = async (req, res, next) => {
     try {
     const token = req.headers['x-access-token'];
     if (!token) return res.status(403).send({ message: 'No token provided!' });
-        const decoded = jwt.verify(token, config.SECRET);
-        req.userId = decoded.id;
-        const user = await userSchema.findById(req.userId, { password: 0 });
-        if(!user) return res.status(404).send({ message: 'No user found!' });
+    const decoded = jwt.verify(token, config.SECRET);
+    req.userId = decoded.id;
+    const user = await userSchema.findById(req.userId, { password: 0 });
+    if(!user) return res.status(404).send({ message: 'No user found!' });
         next();
     } catch (error) {
+        console.log(error);
         return res.status(401).send({ message: 'Unauthorized!' });
     }
 };

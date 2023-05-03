@@ -11,20 +11,20 @@ const getProduct = (req, res) => {
 };
 
 //get product by product_id
-const getOneProduct = (req, res) => { 
+const getOneProduct = async(req, res) => { 
     const producto_id = req.params.producto_id;
     //console.log(producto_id);
     try {
-        productSchema
-            .findOne({producto_id:producto_id})
-            .then((data) => {
-                if (data) {
-                    res.json(data);
-                } else {
-                    res.status(404).json({message: 'id no existe', producto_id: producto_id});
-                }
-            })
-            .catch((error)=> res.json({message: error}));
+        await productSchema
+              .findOne({producto_id:producto_id})
+              .then((data) => {
+                  if (data) {
+                      res.json(data);
+                  } else {
+                      res.status(404).json({message: 'id no existe', producto_id: producto_id});
+                  }
+              })
+              .catch((error)=> res.json({message: error}));
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
@@ -92,33 +92,14 @@ const createProduct = async (req, res) => {
 const updateProduct = async (req, res) => {
   try {
     const { producto_id } = req.params;
-    const { nombre, precio_regular, precio_especial, familia_id, bodegas, cantidadTotal } = req.body;
+    const { nombre, precio_regular, precio_especial, familia_id } = req.body;
 
     // Validar que al menos uno de los parámetros está presente
-    if (!nombre && !precio_regular && !precio_especial && !familia_id && !bodegas && !cantidadTotal) {
+    if (!nombre && !precio_regular && !precio_especial && !familia_id && !cantidadTotal) {
       return res.status(400).json({ message: 'Al menos un parámetro debe ser enviado.' });
     }
 
-    let bodegasObj = {};
-    let actualizaBodegas = false;
-    if (bodegas) {
-      // Crear objeto con las bodegas actuales
-      bodegasObj = req.product.bodegas.reduce((acc, bodega) => {
-        acc[bodega.nombreBodega] = bodega.cantidad;
-        return acc;
-      }, {});
-
-      // Recorrer las nuevas bodegas y actualizar o agregar según corresponda
-      for (const { nombreBodega, cantidad } of bodegas) {
-        if (bodegasObj[nombreBodega]) {
-          bodegasObj[nombreBodega] += cantidad;
-        } else {
-          bodegasObj[nombreBodega] = cantidad;
-        }
-      }
-      actualizaBodegas = true;
-    }
-
+    // Validar que el producto existe
     const productoActualizado = await productSchema.findOneAndUpdate(
       { producto_id: producto_id },
       {
@@ -127,8 +108,6 @@ const updateProduct = async (req, res) => {
           precio_regular,
           precio_especial,
           familia_id,
-          cantidadTotal,
-          bodegas: Object.entries(bodegasObj).map(([nombreBodega, cantidad]) => ({ nombreBodega, cantidad })),
         },
       },
       { new: true } // Devolver el producto actualizado en lugar del original

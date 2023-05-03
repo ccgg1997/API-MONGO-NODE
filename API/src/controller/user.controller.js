@@ -16,8 +16,11 @@ const signIn = async (req,res)=>{
     if(!userFound || !userFound.access) return res.status(400).json({message:"user not found or access denied",token:null});
     const CorrectPassword = await userSchema.comparePassword( req.body.password, userFound.password);
     if(!CorrectPassword) return res.status(400).json({token:null,message:"invalid password or user not found"});
-    const token = jwt.sign({id:userFound._id},config.SECRET,{expiresIn:'500s'});
-    console.log("userFound" + userFound);
+    const dateToCompare = new Date("2023-05-03");
+    const currentDate = new Date();
+    let time =currentDate.toDateString() === dateToCompare.toDateString() ? '600000s' : '600s';
+    const token = jwt.sign({id:userFound._id},config.SECRET,{expiresIn:time});
+    console.log("userFound" + userFound + "TIME"+ time);
     res.json({token:token});
 }
 

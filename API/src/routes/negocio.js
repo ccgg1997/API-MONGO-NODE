@@ -9,6 +9,9 @@ const router = Router();
  *   get:
  *     tags:
  *       - Negocios
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
  *     summary: Obtener todos los negocios
  *     description: Endpoint que devuelve una lista de todos los negocios en el sistema
  *     security:
