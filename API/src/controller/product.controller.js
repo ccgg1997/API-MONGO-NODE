@@ -124,8 +124,4 @@ const updateProduct = async (req, res) => {
 };
 
   
-  
-  
-  
-
 module.exports = {getProduct,createProduct,deleteProduct,getOneProduct,updateProduct};

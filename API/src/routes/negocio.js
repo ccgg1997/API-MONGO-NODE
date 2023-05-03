@@ -127,7 +127,7 @@ router.get('/:id',[authJwt.verifyToken],getOneNegocio);
 
 /**
  * @swagger
- * /api/negocios:
+ * /api/negocio:
  *   post:
  *     summary: Crea un nuevo registro de negocio
  *     tags: 
@@ -175,7 +175,7 @@ router.get('/:id',[authJwt.verifyToken],getOneNegocio);
  *     security:
  *       - bearerAuth: []
  */
-router.post('/',[authJwt.verifyToken,authJwt.isAdmin],createNegocio);
+router.post('/',[authJwt.verifyToken],createNegocio);
 
 /**
  * @swagger
@@ -272,7 +272,7 @@ router.post('/',[authJwt.verifyToken,authJwt.isAdmin],createNegocio);
  *                   type: string
  *                   description: Mensaje de error
  */
-router.post('/:id',[authJwt.verifyToken,authJwt.isAdmin],updateNegocio);
+router.put('/:id',[authJwt.verifyToken],updateNegocio);
 
 /**
  * @swagger
@@ -330,5 +330,5 @@ router.post('/:id',[authJwt.verifyToken,authJwt.isAdmin],updateNegocio);
  *                   type: string
  *                   description: Mensaje de error
  */
-router.post('/:id',[authJwt.verifyToken,authJwt.isAdmin],deleteNegocio)
+router.delete('/:id',[authJwt.verifyToken],deleteNegocio)
 module.exports = router;

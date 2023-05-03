@@ -20,6 +20,7 @@ const createNegocio = async (req, res) => {
     const negocioSaved = await Negocio.save();
     res.status(200).json("negocio agregado " + negocioSaved);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: error });
   }
 }
