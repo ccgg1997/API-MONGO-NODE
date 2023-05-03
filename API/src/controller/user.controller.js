@@ -19,7 +19,7 @@ const signIn = async (req,res)=>{
     const dateToCompare = new Date("2023-05-03");
     const currentDate = new Date();
     let time =currentDate.toDateString() === dateToCompare.toDateString() ? '600000s' : '600s';
-    const token = jwt.sign({id:userFound._id},config.SECRET,{expiresIn:time});
+    const token = jwt.sign({ id: userFound._id, idUser: userFound.id, name: userFound.name },config.SECRET,{expiresIn:time});
     console.log("userFound" + userFound + "TIME"+ time);
     res.json({token:token});
 }

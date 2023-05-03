@@ -2,6 +2,7 @@ const { request } = require('express');
 const movimientoSchema = require('../models/movimiento.schema');
 const productoSchema = require('../models/product.schema');
 const jwt = require('jsonwebtoken');
+const config = require('../config');
 const mongoose = require('mongoose');
 
 
@@ -34,12 +35,24 @@ const createMovimiento = async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    let { tipo, cantidad, usuario, productoId, bodegaId } = req.body;
+    let { tipo, cantidad, productoId, bodegaId } = req.body;
+    //formato de datos
     fecha = new Date();
     productoId = productoId.toUpperCase().trim();
     bodegaId = bodegaId.toUpperCase().trim();
     tipo=tipo.toLowerCase().trim();
-    const newMovimiento = new movimientoSchema({ tipo, fecha, cantidad, usuario, productoId, bodegaId });
+
+    //extrayendo el usuario del token
+    const token = req.headers['x-access-token'];
+    const decoded = jwt.verify(token, config.SECRET);
+    const userId = decoded.idUser;
+    const name=decoded.name;
+
+    const usuario= userId+"-"+name;
+
+    //schema de movimiento
+    const newMovimiento = new movimientoSchema({ tipo, fecha, cantidad, productoId, bodegaId,usuario });
+    
 
     // Buscar el producto y la bodega en la base de datos
     const producto = await productoSchema.findOne({ producto_id: productoId });

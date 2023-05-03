@@ -29,6 +29,10 @@ const movimientoSchema = new mongoose.Schema({
     bodegaId: {
         type: String,
         required: true
+    },
+    activo: {
+      type: Boolean,
+      default: true
     }
   });
 
