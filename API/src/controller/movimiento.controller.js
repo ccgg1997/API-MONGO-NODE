@@ -19,7 +19,7 @@ async function getMovimiento(req, res) {
 // Función para obtener un movimiento
 const getOneMovimiento = async (req, res) => {
   try {
-    const movimiento = await movimientoSchema.findOne({id:req.params.id});
+    const movimiento = await movimientoSchema.findOne({_id:req.params.id});
     if (!movimiento) return res.status(404).json({ message: 'Movimiento no encontrado' });
     res.json(movimiento);
   } catch (err) { 
@@ -83,12 +83,26 @@ const createMovimiento = async (req, res) => {
 };
 
 
-  
+//funcion para elminar movimiento por id
+const deleteMovimiento = async (req, res) => {
+  try {
+    if(!req.params.id) return res.status(400).json({ message: 'Falta el id del movimiento' });
+    const id=req.params.id
+    const movimiento = await movimientoSchema.findOneAndUpdate({_id:id}, { $set:{activo: false}});
+    if (!movimiento) return res.status(404).json({ message: 'Movimiento no encontrado' });
+    console.log(movimiento);
+    res.json({ message: 'Movimiento eliminado' });
+    
+  } catch (err) {
+    console.log(err); 
+    res.status(500).json({ error: err.message });
+  }
+};
 
 
 
 module.exports = {
 
-  getMovimiento, getOneMovimiento,createMovimiento
+  getMovimiento, getOneMovimiento,createMovimiento,deleteMovimiento
  
 };

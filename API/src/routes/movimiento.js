@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { getMovimiento,getOneMovimiento, createMovimiento} = require('../controller/movimiento.controller');
+const { getMovimiento,getOneMovimiento, createMovimiento,deleteMovimiento} = require('../controller/movimiento.controller');
 const { authJwt } = require('../middlewares');
 const router = Router();
 
@@ -227,6 +227,59 @@ router.get('/:id', [authJwt.verifyToken], getOneMovimiento);
  *                   example: Error al crear el movimiento
  */
 router.post('/', [authJwt.verifyToken], createMovimiento);
+
+/**
+ * @swagger
+ * /api/movimiento/{id}:
+ *   delete:
+ *     summary: Elimina un movimiento por ID
+ *     tags:
+ *       - Movimiento
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *       - in: path
+ *         name: id
+ *         description: ID del movimiento a eliminar.
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Movimiento eliminado exitosamente.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Mensaje de éxito de eliminación.
+ *                   example: Movimiento eliminado
+ *       404:
+ *         description: Movimiento no encontrado.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Mensaje de error de movimiento no encontrado.
+ *                   example: Movimiento no encontrado
+ *       500:
+ *         description: Error interno del servidor.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Mensaje de error del servidor.
+ *                   example: Error interno del servidor
+ */
+router.delete('/:id', [authJwt.verifyToken], deleteMovimiento);
 
 
 module.exports = router;
