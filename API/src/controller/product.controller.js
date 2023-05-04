@@ -123,5 +123,64 @@ const updateProduct = async (req, res) => {
   }
 };
 
+const updateProductBodega = async (req, res) => {
+  try {
+    const { producto_id } = req.params;
+    const { bodega,cantidad } = req.body;
+    const producto = await productSchema.findOne({ producto_id: producto_id });
+    if (!producto) {
+      throw new Error(`El producto ${producto_id} no existe`);
+    }
+
+    const isInBodega = productSchema.findOne({ producto_id: producto_id, "bodegas.nombreBodega": bodega });
+    if (!isInBodega) {
+      throw new Error(`La bodega ${bodega} no existe para el producto ${producto_id}`);
+    }
+    
+    await productSchema.findOneAndUpdate(
+      { producto_id: producto_id, "bodegas.nombreBodega": bodega},
+      {
+        $set: {
+          "bodegas.$.cantidad": cantidad,
+        },
+      },
+    );
+
+    res.json({ message: 'Bodega actualizada' });
+
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+const updatePrecioProducto = async (req, res) => {
+  try {
+    const { producto_id } = req.params;
+    const { cliente_id, precio } = req.body;
+    const producto = await productSchema.findOne({ producto_id: producto_id });
+    if (!producto) {
+      throw new Error(`El producto ${producto_id} no existe`);
+    }
+
+    const isInPrecioEspecial = productSchema.findOne({ producto_id: producto_id, "precio_especial.cliente_id": cliente_id });
+    if (!isInPrecioEspecial) {
+      throw new Error(`El cliente ${cliente_id} no tiene precios especiales de ${producto_id}`);
+    }
+    
+    await productSchema.findOneAndUpdate(
+      { producto_id: producto_id, "precio_especial.cliente_id": cliente_id},
+      {
+        $set: {
+          "precio_especial.$.precio": precio,
+        },
+      },
+    );
+
+    res.json({ message: 'precio actualizado' });
+
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
   
-module.exports = {getProduct,createProduct,deleteProduct,getOneProduct,updateProduct};
+module.exports = {getProduct,createProduct,deleteProduct,getOneProduct,updateProduct,updateProductBodega,updatePrecioProducto};

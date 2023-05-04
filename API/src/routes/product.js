@@ -1,5 +1,5 @@
 const {Router}=require('express');
-const { getProduct, createProduct,deleteProduct,getOneProduct,updateProduct } = require('../controller/product.controller');
+const { getProduct, createProduct,deleteProduct,getOneProduct,updateProduct,updateProductBodega,updatePrecioProducto } = require('../controller/product.controller');
 const {authJwt}=require('../middlewares');
 const router=Router();
 
@@ -342,7 +342,115 @@ router.delete('/:producto_id',[authJwt.verifyToken,authJwt.isAdmin],deleteProduc
  */
 router.put('/:producto_id',[authJwt.verifyToken],updateProduct);
 
+/**
+ * @swagger
+ * /api/products/productBodega/{producto_id}:
+ *   put:
+ *     summary: Modificar cantidad del producto en bodega especifica
+ *     tags:
+ *       - Products
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *       - in: path
+ *         name: producto_id
+ *         description: ID del producto a modificar
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               bodega:
+ *                 type: string
+ *               cantidad:
+ *                 type: number
+ *                 minimum: 0
+ *     responses:
+ *       200:
+ *         description: Producto modificado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 n:
+ *                   type: number
+ *                 nModified:
+ *                   type: number
+ *                 ok:
+ *                   type: number
+ *       400:
+ *         description: El producto no pudo ser modificado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
+router.put('/productBodega/:producto_id',[authJwt.verifyToken],updateProductBodega);
 
-
-
+/**
+ * @swagger
+ * /api/products/precioEspecialProd/{producto_id}:
+ *   put:
+ *     summary: Modificar el precio especial del producto en cliente especifico
+ *     tags:
+ *       - Products
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *       - in: path
+ *         name: producto_id
+ *         description: ID del producto a modificar
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               cliente_id:
+ *                 type: string
+ *               precio:
+ *                 type: number
+ *                 minimum: 0
+ *     responses:
+ *       200:
+ *         description: Producto modificado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 n:
+ *                   type: number
+ *                 nModified:
+ *                   type: number
+ *                 ok:
+ *                   type: number
+ *       400:
+ *         description: El producto no pudo ser modificado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
+router.put('/precioEspecialProd/:producto_id',[authJwt.verifyToken],updatePrecioProducto);
 module.exports = router;
