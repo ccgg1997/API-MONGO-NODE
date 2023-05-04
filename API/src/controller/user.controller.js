@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const saltRounds = 10;
 const jwt = require('jsonwebtoken');
 const config = require('../config');
-const {Role} = require('../models/roles.Schema');
+const {Role} = require('../models/roles.schema');
 
 const signUp = async (req,res)=>{
     createUser(req,res);
