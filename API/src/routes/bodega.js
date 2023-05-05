@@ -1,105 +1,107 @@
 const {Router}=require('express');
-const {getBodega,getOneBodega, createBodega, deleteBodega, updateBodega } = require('../controller/bodega.controller');
+const {getBodega,getOneBodega, createBodega, deleteBodega } = require('../controller/bodega.controller');
 const {authJwt}=require('../middlewares');
 const router=Router();
 
 /**
- * @swagger
+ * @openapi
+ * components:
+ *   schemas:
+ *     Bodega:
+ *       type: object
+ *       properties:
+ *         bodegaId:
+ *           type: string
+ *         bodegaNombre:
+ *           type: string
+ *         activo:
+ *           type: boolean
+ *
  * /api/bodega:
  *   get:
  *     summary: Obtiene todas las bodegas activas
- *     tags: [Bodega]
- *     parameters:
- *       - in: header
- *         name: x-access-token
- *         schema:
- *           type: string
- *         required: true
- *         description: Token de autenticación JWT para acceder al endpoint
- *     responses:
- *       200:
- *         description: Lista de todas las bodegas activas
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *       500:
- *         description: Error interno del servidor
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: Error al obtener bodegas
- */
-router.get('/',[authJwt.verifyToken],getBodega);
-
-/**
- * @swagger
- * /api/bodega/{idBodega}:
- *   get:
- *     summary: Obtiene una bodega activa por su ID
- *     tags: [Bodega]
- *     parameters:
- *       - in: header
- *         name: x-access-token
- *         schema:
- *           type: string
- *         required: true
- *         description: Token de autenticación JWT para acceder al endpoint 
- *       - in: path
- *         name: idBodega
- *         schema:
- *           type: string
- *         required: true
- *         description: ID de la bodega a buscar
- *     responses:
- *       200:
- *         description: Bodega encontrada
- *         content:
- *           application/json:
- *             schema:
- *       404:
- *         description: No se encontró ninguna bodega con ese ID
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: No se encontró ninguna bodega con ese ID
- *       500:
- *         description: Error interno del servidor
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: Error al obtener bodega
- */
-router.get('/:bodegaId',[authJwt.verifyToken],getOneBodega);
-
-/**
- * @swagger
- * /api/bodega:
- *   post:
- *     summary: Crea un nuevo registro de Bodega
- *     tags: 
+ *     tags:
  *       - Bodega
  *     parameters:
  *       - in: header
  *         name: x-access-token
+ *     responses:
+ *       '200':
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Bodega'
+ *       '500':
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
+router.get('/',[authJwt.verifyToken],getBodega);
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     Bodega:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *         bodegaId:
+ *           type: string
+ *         bodegaNombre:
+ *           type: string
+ *         activo:
+ *           type: boolean
+ *
+ * /api/bodega/{bodegaId}:
+ *   get:
+ *     summary: Retorna una Bodega según su ID
+ *     description: Retorna una Bodega según su ID
+ *     tags:
+ *       - Bodega
+ *     parameters:
+ *       - in: path
+ *         name: bodegaId
+ *         required: true
+ *         description: ID de la Bodega a buscar
  *         schema:
  *           type: string
- *         required: true
- *         description: Token de autenticación JWT para acceder al endpoint
+ *     responses:
+ *       '200':
+ *         description: Bodega encontrada exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Bodega'
+ *       '404':
+ *         description: No se encontró ninguna Bodega con ese ID
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
+router.get('/:bodegaId',[authJwt.verifyToken],getOneBodega);
+
+/**
+ * @openapi
+ * /api/bodega:
+ *   post:
+ *     summary: Crea un nuevo registro de Bodega.
+ *     description: Crea un nuevo registro de Bodega con los datos proporcionados en el cuerpo de la petición.
+ *     tags: [Bodega]
  *     requestBody:
- *       description: Objeto JSON que contiene los datos de la Bodega
  *       required: true
  *       content:
  *         application/json:
@@ -108,66 +110,71 @@ router.get('/:bodegaId',[authJwt.verifyToken],getOneBodega);
  *             properties:
  *               bodegaId:
  *                 type: string
- *                 description: ID único de la Bodega
- *               cantidad:
- *                 type: number
- *                 description: Cantidad total de productos en la Bodega
- *               movimientos:
- *                 type: array
- *                 description: Lista de los movimientos realizados en la Bodega
+ *                 description: Identificador único de la bodega.
+ *               bodegaNombre:
+ *                 type: string
+ *                 description: Nombre de la bodega.
+ *             required:
+ *               - bodegaId
+ *               - bodegaNombre
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         required: true
+ *         description: Token de acceso a la API.
  *     responses:
  *       '201':
- *         description: Registro de Bodega creado exitosamente
+ *         description: Registro de Bodega creado exitosamente.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Mensaje de confirmación del registro de Bodega.
+ *                   example: Bodega creado exitosamente.
  *       '400':
- *         description: Parámetros inválidos proporcionados en la solicitud
+ *         description: Error de validación de datos del registro de Bodega.
  *       '500':
- *         description: Error interno del servidor
- *     security:
- *       - bearerAuth: []
+ *         description: Error interno del servidor al crear el registro de Bodega.
  */
-router.post('/',[authJwt.verifyToken,authJwt.isAdmin],createBodega);
+//router.post('/',[authJwt.verifyToken,authJwt.isAdmin],createBodega);
+router.post('/',[authJwt.verifyToken],createBodega);
 
 /**
  * @swagger
  * /api/bodega/{bodegaId}:
- *   put:
- *     summary: Actualiza la cantidad de una bodega específica.
+ *   delete:
+ *     summary: Eliminar una bodega por su ID
+ *     description: Eliminar una bodega en la base de datos por su ID.
  *     tags:
  *       - Bodega
- *     description: Permite actualizar la cantidad y los movimientos de una bodega en particular.
  *     parameters:
  *       - in: header
  *         name: x-access-token
- *         schema:
- *           type: string
- *         required: true
- *         description: Token de autenticación JWT para acceder al endpoint
  *       - in: path
  *         name: bodegaId
+ *         required: true
+ *         description: ID de la bodega a eliminar.
  *         schema:
  *           type: string
- *         required: true
- *         description: Identificador único de la bodega que se desea actualizar.
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               cantidad:
- *                 type: number
- *                 minimum: 0
- *                 description: Cantidad a actualizar en la bodega.
- *               movimientos:
- *                 type: array
- *                 description: Lista de movimientos a actualizar en la bodega.
  *     responses:
  *       200:
- *         description: La bodega ha sido actualizada con éxito.
+ *         description: Bodega eliminada con éxito.
  *         content:
  *           application/json:
  *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                 bodegaId:
+ *                   type: string
+ *                 bodegaNombre:
+ *                   type: string
+ *                 activo:
+ *                   type: boolean
  *       404:
  *         description: No se encontró ninguna bodega con ese ID.
  *         content:
@@ -186,34 +193,6 @@ router.post('/',[authJwt.verifyToken,authJwt.isAdmin],createBodega);
  *               properties:
  *                 message:
  *                   type: string
- */
-router.put('/:bodegaId',[authJwt.verifyToken],updateBodega);
-
-/**
- * @openapi
- * 
- * /api/bodega/{idBodega}:
- *   delete:
- *     summary: Elimina un registro de bodega existente.
- *     tags: [Bodega]
- *     parameters:
- *       - in: header
- *         name: x-access-token
- *         schema:
- *           type: string
- *         required: true
- *         description: Token de autenticación JWT para acceder al endpoint 
- *       - in: path
- *         name: idBodega
- *         schema:
- *           type: string
- *         required: true
- *         description: ID del registro de bodega a eliminar.
- *     responses:
- *       200:
- *         description: Registro de bodega eliminado exitosamente.
- *       404:
- *         description: No se encontró ningún registro de bodega con ese ID de bodega.
  */
 router.delete('/:bodegaId',[authJwt.verifyToken,authJwt.isAdmin],deleteBodega);  
 

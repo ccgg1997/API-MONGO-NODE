@@ -28,14 +28,13 @@ const getOneBodega = async (req, res) => {
 
 // Crear nuevo Bodega
 const createBodega = async (req, res) => {
-    const { bodegaId, cantidadTotal, cantidadProducto } = req.body;
+    const { bodegaId,bodegaNombre} = req.body;
   
     try {
       // Crear nuevo registro de Bodega
       const nuevaBodega = bodegaSchema({
         bodegaId,
-        cantidadTotal,
-        cantidadProducto,
+        bodegaNombre
       });
       console.log(nuevaBodega);
       // Guardar registro en la base de datos
@@ -49,32 +48,32 @@ const createBodega = async (req, res) => {
   };
   
 
-const updateBodega = async (req, res) => {
-  try {
-    const { bodegaId } = req.params;
-    const { activo, cantidadTotal, cantidadProducto } = req.body;
-    console.log("checkpoint updateBodega:: ", bodegaId, cantidadTotal, cantidadProducto, activo);
+// const updateBodega = async (req, res) => {
+//   try {
+//     const { bodegaId } = req.params;
+//     const { activo } = req.body;
+//     console.log("checkpoint updateBodega:: ", bodegaId, cantidadTotal, cantidadProducto, activo);
 
-    // Validar que al menos uno de los parámetros está presente
-    if (!cantidadTotal && !cantidadProducto && activo === undefined) {
-      return res.status(400).json({ message: 'Al menos un parámetro debe ser enviado.' });
-    }
+//     // Validar que al menos uno de los parámetros está presente
+//     if (!cantidadTotal && !cantidadProducto && activo === undefined) {
+//       return res.status(400).json({ message: 'Al menos un parámetro debe ser enviado.' });
+//     }
 
-    const updatedBodega = await bodegaSchema.findOneAndUpdate(
-      { bodegaId: bodegaId },
-      { $set: { cantidadTotal:cantidadTotal, cantidadProducto:cantidadProducto, activo:activo } },
-      { new: true } // Devolver la bodega actualizada en lugar de la original
-    );
+//     const updatedBodega = await bodegaSchema.findOneAndUpdate(
+//       { bodegaId: bodegaId },
+//       { $set: { cantidadTotal:cantidadTotal, cantidadProducto:cantidadProducto, activo:activo } },
+//       { new: true } // Devolver la bodega actualizada en lugar de la original
+//     );
 
-    if (updatedBodega) {
-      res.json(updatedBodega);
-    } else {
-      res.status(404).json({ message: 'id no existe', bodegaId: bodegaId });
-    }
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
+//     if (updatedBodega) {
+//       res.json(updatedBodega);
+//     } else {
+//       res.status(404).json({ message: 'id no existe', bodegaId: bodegaId });
+//     }
+//   } catch (error) {
+//     res.status(400).json({ message: error.message });
+//   }
+// };
   
 
 
@@ -95,4 +94,4 @@ const deleteBodega = async (req, res) => {
 };
 
 
-  module.exports = {getBodega,getOneBodega,createBodega,updateBodega,deleteBodega};
+  module.exports = {getBodega,getOneBodega,createBodega,deleteBodega};
