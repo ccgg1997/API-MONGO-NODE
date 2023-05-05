@@ -4,62 +4,81 @@ const {authJwt}=require('../middlewares');
 const router=Router();
 
 /**
- * @openapi
+ * @swagger
  * /api/products:
  *   get:
- *     tags:
- *       - Products
- *     summary: Retorna una lista de productos
+ *     tags: [Products]
+ *     summary: Obtener todos los productos activos
+ *     description: Devuelve un arreglo con todos los productos activos.
  *     parameters:
  *       - in: header
  *         name: x-access-token
- *         schema:
- *           type: string
  *         required: true
- *         description: Token de autenticación JWT para acceder al endpoint
- *       
+ *         description: Token de acceso a la API.
  *     responses:
- *       200:
- *         description: OK
+ *       '200':
+ *         description: Arreglo con los productos activos.
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 type: object
- *                 properties:
- *                   _id:
- *                     type: string
- *                     description: ID del producto
- *                   producto_id:
- *                     type: string
- *                     description: Identificador del producto
- *                   nombre:
- *                     type: string
- *                     description: Nombre del producto
- *                   precio_regular:
- *                     type: number
- *                     description: Precio regular del producto
- *                   precio_especial:
- *                     type: array
- *                     description: Precios especiales para cada cliente
- *                     items:
- *                       type: object
- *                       properties:
- *                         cliente_id:
- *                           type: string
- *                           description: ID del cliente con precio especial
- *                         precio:
- *                           type: number
- *                           description: Precio especial para el cliente
- *                   familia_id:
- *                     type: string
- *                     description: ID de la familia a la que pertenece el producto
- *                   activo:
- *                     type: boolean
- *                     description: Indica si el producto está activo o no
- *       400:
- *         description: Error al obtener la lista de productos
+ *                 $ref: '#/components/schemas/Product'
+ *       '500':
+ *         description: Error al obtener los productos.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Error al obtener los productos.
+ * components:
+ *   schemas:
+ *     Product:
+ *       type: object
+ *       properties:
+ *         producto_id:
+ *           type: string
+ *           example: '12345'
+ *         nombre:
+ *           type: string
+ *           example: 'Producto de prueba'
+ *         precio_regular:
+ *           type: number
+ *           example: 10.99
+ *         precio_especial:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               cliente_id:
+ *                 type: string
+ *                 example: '54321'
+ *               precio:
+ *                 type: number
+ *                 example: 9.99
+ *         familia_id:
+ *           type: string
+ *           example: 'Familia 1'
+ *         activo:
+ *           type: boolean
+ *           example: true
+ *         bodegas:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               nombreBodega:
+ *                 type: string
+ *                 example: 'Bodega 1'
+ *               cantidad:
+ *                 type: number
+ *                 example: 10
+ *         cantidadTotal:
+ *           type: number
+ *           example: 50
  */
 router.get('/',authJwt.verifyToken, getProduct);
 
@@ -67,30 +86,28 @@ router.get('/',authJwt.verifyToken, getProduct);
  * @swagger
  * /api/products/{producto_id}:
  *   get:
- *     tags:
- *       - Products
- *     summary: Obtiene un producto por su ID.
+ *     tags: [Products]
+ *     summary: Obtener un producto por su ID
+ *     description: Devuelve un producto que coincida con el ID proporcionado.
  *     parameters:
- *       - in: header
- *         name: x-access-token
- *         schema:
- *           type: string
- *         required: true
- *         description: Token de autenticación JWT para acceder al endpoint       
  *       - in: path
  *         name: producto_id
- *         schema:
- *           type: string
  *         required: true
  *         description: ID del producto a buscar.
+ *         schema:
+ *           type: string
+ *       - in: header
+ *         name: x-access-token
+ *         required: true
+ *         description: Token de acceso a la API.
  *     responses:
- *       200:
- *         description: Producto encontrado.
+ *       '200':
+ *         description: Objeto con el producto encontrado.
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Product'
- *       404:
+ *       '404':
  *         description: Producto no encontrado.
  *         content:
  *           application/json:
@@ -102,95 +119,9 @@ router.get('/',authJwt.verifyToken, getProduct);
  *                   example: id no existe
  *                 producto_id:
  *                   type: string
- *                   example: P001
- */
-router.get('/:producto_id',[authJwt.verifyToken,authJwt.isAdmin],getOneProduct);
-
-/**
- * @openapi
- * components:
- *   schemas:
- *     Product:
- *       type: object
- *       properties:
- *         _id:
- *           type: string
- *           description: ID del producto
- *         producto_id:
- *           type: string
- *           description: Identificador del producto
- *         nombre:
- *           type: string
- *           description: Nombre del producto
- *         precio_regular:
- *           type: number
- *           description: Precio regular del producto
- *         precio_especial:
- *           type: array
- *           description: Precios especiales para cada cliente
- *           items:
- *             type: object
- *             properties:
- *               cliente_id:
- *                 type: string
- *                 description: ID del cliente con precio especial
- *               precio:
- *                 type: number
- *                 description: Precio especial para el cliente
- *         familia_id:
- *           type: string
- *           description: ID de la familia a la que pertenece el producto
- *         activo:
- *           type: boolean
- *           description: Indica si el producto está activo o no
- *         bodegas:
- *           type: array
- *           description: Lista de bodegas del producto
- *           items:
- *             type: object
- *             properties:
- *               nombreBodega:
- *                 type: string
- *                 description: Nombre de la bodega
- *               cantidad:
- *                 type: number
- *                 description: Cantidad en la bodega
- *                 minimum: 0
- *         cantidadTotal:
- *           type: number
- *           description: Cantidad total del producto en todas las bodegas
- *           minimum: 0
- *     ErrorResponse:
- *       type: object
- *       properties:
- *         message:
- *           type: string
- *           description: Mensaje de error
- *     JwtToken:
- *       type: string
- *       description: Token de autenticación JWT
- *
- * /api/products:
- *   post:
- *     tags:
- *       - Products
- *     summary: Crea un nuevo producto
- *     parameters:
- *       - in: header
- *         name: x-access-token
- *         schema:
- *           $ref: '#/components/schemas/JwtToken'
- *         required: true
- *         description: Token de autenticación JWT para acceder al endpoint
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Product'
- *     responses:
- *       '200':
- *         description: OK
+ *                   example: '12345'
+ *       '500':
+ *         description: Error al obtener el producto.
  *         content:
  *           application/json:
  *             schema:
@@ -198,15 +129,177 @@ router.get('/:producto_id',[authJwt.verifyToken,authJwt.isAdmin],getOneProduct);
  *               properties:
  *                 message:
  *                   type: string
- *                   description: Mensaje de confirmación
- *                 product:
- *                   $ref: '#/components/schemas/Product'
- *       '400':
- *         description: Error de validación de entrada
+ *                   example: Error al obtener el producto.
+ * components:
+ *   schemas:
+ *     Product:
+ *       type: object
+ *       properties:
+ *         producto_id:
+ *           type: string
+ *           example: '12345'
+ *         nombre:
+ *           type: string
+ *           example: 'Producto de prueba'
+ *         precio_regular:
+ *           type: number
+ *           example: 10.99
+ *         precio_especial:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               cliente_id:
+ *                 type: string
+ *                 example: '54321'
+ *               precio:
+ *                 type: number
+ *                 example: 9.99
+ *         familia_id:
+ *           type: string
+ *           example: 'Familia 1'
+ *         activo:
+ *           type: boolean
+ *           example: true
+ *         bodegas:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               nombreBodega:
+ *                 type: string
+ *                 example: 'Bodega 1'
+ *               cantidad:
+ *                 type: number
+ *                 example: 10
+ *         cantidadTotal:
+ *           type: number
+ *           example: 50
+ */
+router.get('/:producto_id',[authJwt.verifyToken],getOneProduct);
+
+/**
+ * @swagger
+ * /api/products:
+ *   post:
+ *     tags: [Products]
+ *     summary: Crear un nuevo producto
+ *     description: Crea un nuevo producto con los datos proporcionados.
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         required: true
+ *         description: Token de acceso a la API.
+ *     requestBody:
+ *       description: Datos del producto a crear.
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               producto_id:
+ *                 type: string
+ *                 example: '12345'
+ *               nombre:
+ *                 type: string
+ *                 example: 'Producto de prueba'
+ *               precio_regular:
+ *                 type: number
+ *                 example: 10.99
+ *               precio_especial:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     cliente_id:
+ *                       type: string
+ *                       example: '54321'
+ *                     precio:
+ *                       type: number
+ *                       example: 9.99
+ *               familia_id:
+ *                 type: string
+ *                 example: 'Familia 1'
+ *               activo:
+ *                 type: boolean
+ *                 example: true
+ *               bodegas:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     nombreBodega:
+ *                       type: string
+ *                       example: 'Bodega 1'
+ *                     cantidad:
+ *                       type: number
+ *                       example: 10
+ *               cantidadTotal:
+ *                 type: number
+ *                 example: 50
+ *     responses:
+ *       '200':
+ *         description: Objeto con el producto creado.
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *               $ref: '#/components/schemas/Product'
+ *       '400':
+ *         description: Error al crear el producto.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Error al crear el producto.
+ * components:
+ *   schemas:
+ *     Product:
+ *       type: object
+ *       properties:
+ *         producto_id:
+ *           type: string
+ *           example: '12345'
+ *         nombre:
+ *           type: string
+ *           example: 'Producto de prueba'
+ *         precio_regular:
+ *           type: number
+ *           example: 10.99
+ *         precio_especial:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               cliente_id:
+ *                 type: string
+ *                 example: '54321'
+ *               precio:
+ *                 type: number
+ *                 example: 9.99
+ *         familia_id:
+ *           type: string
+ *           example: 'Familia 1'
+ *         activo:
+ *           type: boolean
+ *           example: true
+ *         bodegas:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               nombreBodega:
+ *                 type: string
+ *                 example: 'Bodega 1'
+ *               cantidad:
+ *                 type: number
+ *                 example: 10
+ *         cantidadTotal:
+ *           type: number
+ *           example: 50
  */
 router.post('/',[authJwt.verifyToken],createProduct);
 

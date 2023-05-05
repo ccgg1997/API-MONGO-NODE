@@ -1,6 +1,8 @@
 const { request } = require('express');
 const productSchema = require('../models/product.schema');
+const negocioSchema = require('../models/negocio.schema');
 const jwt = require('jsonwebtoken');
+const bodegaSchema = require('../models/bodega.schema');
 
 //get all Products
 const getProduct = (req, res) => {
@@ -33,17 +35,51 @@ const getOneProduct = async(req, res) => {
 
 //create product
 const createProduct = async (req, res) => {
-  const producto_id= req.body.producto_id;
-  const precio_regular= req.body.precio_regular;
-  const precio_especial= req.body.precio_especial ;
-  const familia_id= req.body.familia_id ; 
-  const activo = true;
-  const nombre= req.body.nombre;
-  const bodegas = req.body.bodegas;
-  const cantidadTotal = req.body.cantidadTotal;
 
+  //obteniendo variables del body
+  const { producto_id, precio_regular, precio_especial, familia_id,
+    nombre, bodegas, cantidadTotal } = req.body;
+  const activo = true;
+  
+  //validando que se ingresen todos los datos
+  if(!producto_id && !precio_regular & !familia_id && !nombre && !bodegas && !cantidadTotal){
+    return res.status(400).json({ message: "no se ingresaron datos" });
+  }
+
+  //validando que no se ingrese un nombre de bodega que no existe
+  if( bodegas !=undefined && bodegas.length > 0){
+    for (let i = 0; i < bodegas.length; i++) {
+      if(!bodegas[i].nombreBodega){
+        return res.status(400).json({ message: "no se ingresaron datos de bodegas" });
+      }
+      const nombreBodegaParseado = bodegas[i].nombreBodega.toUpperCase().trim();
+      bodegas[i] = {
+        ...bodegas[i],
+        nombreBodega: nombreBodegaParseado
+      }
+
+      const bodegaExistente = await bodegaSchema.findOne({ bodegaNombre: nombreBodegaParseado });
+      if (bodegaExistente === null || bodegaExistente === undefined) {
+        return res.status(400).json({ message: `La bodega ${bodegas[i].nombreBodega} no existe en la empresa.` });
+      }
+    }
+  }
+
+  //validando que no se ingrese un precio especial sin cliente o con un cliente que no existe
+  if(precio_especial !=undefined){
+    for (let i = 0; i < precio_especial.length; i++) {
+      if(!precio_especial[i].cliente_id){
+        return res.status(400).json({ message: "no se ingresaron datos de clientes" });
+      }
+      const clienteExistente = await negocioSchema.findOne({ id: precio_especial[i].cliente_id });
+      if (clienteExistente === null || clienteExistente === undefined) {
+        return res.status(400).json({ message: `El cliente ${precio_especial[i].cliente_id} no existe en la empresa.` });
+      }
+    }
+  }
+
+  // Crea un nuevo producto con los datos proporcionados
   try {
-    // Crea un nuevo producto con los datos proporcionados
     console.log("creando producto... antes del schema")
     const product = productSchema({
       producto_id,
@@ -57,7 +93,7 @@ const createProduct = async (req, res) => {
     });
     
     await product.save();
-    res.send("producto creado: " + productSchema)
+    res.send("producto creado: " + product)
   } catch (error) {
 
     console.log(error.message)
@@ -68,24 +104,24 @@ const createProduct = async (req, res) => {
 
 
 
-  //delete product, change active to false, not delete from database 
-  const deleteProduct = (req, res) => {
-    const producto_id = req.params.producto_id;
-    console.log(producto_id);
-    try {
-      if (producto_id) {
-        productSchema
-          .updateOne({ producto_id: producto_id }, { $set: { activo: false } })
-          .then((data) => res.json(data))
-          .catch((error) => res.json({ message: error }));
-      }
-      if (!producto_id) {
-        res.status(400).json({ message: 'No se proporcionó el ID del producto' });
-      }
-    } catch (error) {
-      res.status(400).json({ message: error.message });
+//delete product, change active to false, not delete from database 
+const deleteProduct = (req, res) => {
+  const producto_id = req.params.producto_id;
+  console.log(producto_id);
+  try {
+    if (producto_id) {
+      productSchema
+        .updateOne({ producto_id: producto_id }, { $set: { activo: false } })
+        .then((data) => res.json(data))
+        .catch((error) => res.json({ message: error }));
     }
-  };
+    if (!producto_id) {
+      res.status(400).json({ message: 'No se proporcionó el ID del producto' });
+    }
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
 
 
 // Actualizar la función updateProduct
@@ -123,6 +159,7 @@ const updateProduct = async (req, res) => {
   }
 };
 
+
 const updateProductBodega = async (req, res) => {
   try {
     const { producto_id } = req.params;
@@ -151,9 +188,9 @@ const updateProductBodega = async (req, res) => {
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
-};
+  };
 
-const updatePrecioProducto = async (req, res) => {
+  const updatePrecioProducto = async (req, res) => {
   try {
     const { producto_id } = req.params;
     const { cliente_id, precio } = req.body;

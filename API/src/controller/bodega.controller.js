@@ -28,24 +28,31 @@ const getOneBodega = async (req, res) => {
 
 // Crear nuevo Bodega
 const createBodega = async (req, res) => {
-    const { bodegaId,bodegaNombre} = req.body;
-  
-    try {
+  const { bodegaId, bodegaNombre } = req.body;
+
+  if (!bodegaNombre) {
+      return res.status(400).json({ message: "No se proporcionó un nombre de bodega" });
+  }
+
+  const nombreBodega = bodegaNombre.toUpperCase().trim();
+
+  try {
       // Crear nuevo registro de Bodega
       const nuevaBodega = bodegaSchema({
-        bodegaId,
-        bodegaNombre
+          bodegaId,
+          bodegaNombre: nombreBodega
       });
-      console.log(nuevaBodega);
+
       // Guardar registro en la base de datos
       await nuevaBodega.save();
-  
+
       res.status(201).json({ message: 'Bodega creado exitosamente' });
-    } catch (error) {
+  } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Error al crear Bodega' });
-    }
-  };
+  }
+};
+
   
 
 // const updateBodega = async (req, res) => {
