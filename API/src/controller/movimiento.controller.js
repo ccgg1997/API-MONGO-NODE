@@ -35,7 +35,7 @@ const createMovimiento = async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    let { tipo, cantidad, productoId, bodegaId } = req.body;
+    let { tipo, cantidad, productoId, bodegaId,categoria } = req.body;
     //formato de datos
     fecha = new Date();
     productoId = productoId.toUpperCase().trim();
@@ -51,7 +51,7 @@ const createMovimiento = async (req, res) => {
     const usuario= userId+"-"+name;
 
     //schema de movimiento
-    const newMovimiento = new movimientoSchema({ tipo, fecha, cantidad, productoId, bodegaId,usuario });
+    const newMovimiento = new movimientoSchema({ tipo, fecha, cantidad, productoId, bodegaId,usuario,categoria });
     
 
     // Buscar el producto y la bodega en la base de datos
@@ -86,11 +86,27 @@ const createMovimiento = async (req, res) => {
 //funcion para elminar movimiento por id
 const deleteMovimiento = async (req, res) => {
   try {
+    //elimna movimiento(cambia estado a false)
+    const fecha = new Date();
     if(!req.params.id) return res.status(400).json({ message: 'Falta el id del movimiento' });
     const id=req.params.id
-    const movimiento = await movimientoSchema.findOneAndUpdate({_id:id}, { $set:{activo: false}});
-    if (!movimiento) return res.status(404).json({ message: 'Movimiento no encontrado' });
-    console.log(movimiento);
+    const movimiento = await movimientoSchema.findOneAndUpdate({_id:id}, { $set:{activo: false,fechaEliminacion:fecha,categoria:'devolucion'}});
+
+    //actualiza la cantidad del producto con el movimiento eliminado(entrada o salida)
+    const tipo=movimiento.tipo;
+    const cantidad=movimiento.cantidad;
+    const bodegaId=movimiento.bodegaId;
+    const productoId=movimiento.productoId;
+    
+    if (!movimiento || !movimiento.activo ) return res.status(404).json({ message: 'Movimiento no encontrado o inactivo' });
+   //console.log(cantidad, tipo, bodegaId, productoId);
+    //console.log(movimiento);
+    
+    const productoModificado= await productoSchema.findOneAndUpdate(
+      { producto_id: productoId, "bodegas.nombreBodega": bodegaId },
+      { $inc: { "bodegas.$.cantidad": tipo === 'salida' ? cantidad : -cantidad, cantidadTotal: tipo === 'salida' ? cantidad : -cantidad } });
+    console.log('producto-modificado: '+productoModificado);
+
     res.json({ message: 'Movimiento eliminado' });
     
   } catch (err) {

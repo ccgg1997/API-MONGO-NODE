@@ -4,81 +4,65 @@ const { authJwt } = require('../middlewares');
 const router = Router();
 
 /**
- * @swagger
+ * @openapi
  * /api/movimiento:
  *   get:
- *     tags:
- *       - Movimiento
  *     parameters:
  *       - in: header
  *         name: x-access-token
- *     summary: Obtener todos los movimiento
- *     description: Endpoint que devuelve una lista de todos los movimiento en el sistema
- *     security:
- *       - bearerAuth: []
+ *     summary: Obtener todos los movimientos
+ *     description: Retorna un arreglo con todos los movimientos registrados en el sistema.
+ *     tags: [Movimiento]
  *     responses:
  *       200:
- *         description: Lista de movimiento recuperada con éxito
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   id:
- *                     type: string
- *                     description: ID del movimiento
- *                   fecha:
- *                     type: string
- *                     format: date
- *                     description: Fecha del movimiento
- *                   tipo:
- *                     type: string
- *                     description: Tipo de movimiento (Ingreso o egreso)
- *                   descripcion:
- *                     type: string
- *                     description: Descripción del movimiento
- *                   monto:
- *                     type: number
- *                     description: Monto del movimiento
- *                   categoria:
- *                     type: string
- *                     description: Categoría del movimiento
- *                   negocio:
- *                     type: object
- *                     description: Negocio asociado al movimiento
- *                     properties:
- *                       id:
- *                         type: string
- *                         description: ID del negocio
- *                       nombre:
- *                         type: string
- *                         description: Nombre del negocio
- *                       direccion:
- *                         type: string
- *                         description: Dirección del negocio
- *                       telefono:
- *                         type: string
- *                         description: Teléfono del negocio
- *                       activo:
- *                         type: boolean
- *                         description: Indica si el negocio está activo o no
- *       500:
- *         description: Error en el servidor
+ *         description: Movimiento encontrado con éxito
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 message:
+ *                 _id:
  *                   type: string
- *                   description: Mensaje de error
- *     securitySchemes:
- *       bearerAuth:
- *         type: http
- *         scheme: bearer
- *         bearerFormat: JWT
+ *                   description: ID del movimiento
+ *                 tipo:
+ *                   type: string
+ *                   description: Tipo de movimiento (entrada o salida)
+ *                 fecha:
+ *                   type: string
+ *                   format: date
+ *                   description: Fecha del movimiento
+ *                 cantidad:
+ *                   type: number
+ *                   description: Cantidad del movimiento
+ *                 usuario:
+ *                   type: string
+ *                   description: Usuario que realizó el movimiento
+ *                 productoId:
+ *                   type: string
+ *                   description: ID del producto asociado al movimiento
+ *                 bodegaId:
+ *                   type: string
+ *                   description: ID de la bodega donde se realizó el movimiento
+ *                 activo:
+ *                   type: boolean
+ *                   description: Indica si el movimiento está activo o no
+ *                 fechaEliminacion:
+ *                   type: string
+ *                   format: date
+ *                   description: Fecha en que se eliminó el movimiento (si aplica)
+ *                 categoria:
+ *                   type: string
+ *                   description: Categoría del movimiento (producción, venta o devolución)
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Descripción del error.
  */
 router.get('/', [authJwt.verifyToken], getMovimiento);
 
@@ -108,44 +92,38 @@ router.get('/', [authJwt.verifyToken], getMovimiento);
  *             schema:
  *               type: object
  *               properties:
- *                 id:
+ *                 _id:
  *                   type: string
  *                   description: ID del movimiento
+ *                 tipo:
+ *                   type: string
+ *                   description: Tipo de movimiento (entrada o salida)
  *                 fecha:
  *                   type: string
  *                   format: date
  *                   description: Fecha del movimiento
- *                 tipo:
- *                   type: string
- *                   description: Tipo de movimiento (Ingreso o egreso)
- *                 descripcion:
- *                   type: string
- *                   description: Descripción del movimiento
- *                 monto:
+ *                 cantidad:
  *                   type: number
- *                   description: Monto del movimiento
+ *                   description: Cantidad del movimiento
+ *                 usuario:
+ *                   type: string
+ *                   description: Usuario que realizó el movimiento
+ *                 productoId:
+ *                   type: string
+ *                   description: ID del producto asociado al movimiento
+ *                 bodegaId:
+ *                   type: string
+ *                   description: ID de la bodega donde se realizó el movimiento
+ *                 activo:
+ *                   type: boolean
+ *                   description: Indica si el movimiento está activo o no
+ *                 fechaEliminacion:
+ *                   type: string
+ *                   format: date
+ *                   description: Fecha en que se eliminó el movimiento (si aplica)
  *                 categoria:
  *                   type: string
- *                   description: Categoría del movimiento
- *                 negocio:
- *                   type: object
- *                   description: Negocio asociado al movimiento
- *                   properties:
- *                     id:
- *                       type: string
- *                       description: ID del negocio
- *                     nombre:
- *                       type: string
- *                       description: Nombre del negocio
- *                     direccion:
- *                       type: string
- *                       description: Dirección del negocio
- *                     telefono:
- *                       type: string
- *                       description: Teléfono del negocio
- *                     activo:
- *                       type: boolean
- *                       description: Indica si el negocio está activo o no
+ *                   description: Categoría del movimiento (producción, venta o devolución)
  *       404:
  *         description: Movimiento no encontrado
  *         content:
@@ -181,6 +159,7 @@ router.get('/:id', [authJwt.verifyToken], getOneMovimiento);
  *       - in: header
  *         name: x-access-token
  *     requestBody:
+ *       description: Datos del movimiento a crear
  *       required: true
  *       content:
  *         application/json:
@@ -189,22 +168,32 @@ router.get('/:id', [authJwt.verifyToken], getOneMovimiento);
  *             properties:
  *               tipo:
  *                 type: string
- *                 description: Tipo de movimiento (entrada o salida)
+ *                 description: Tipo de movimiento ("entrada" o "salida")
+ *                 example: entrada
  *               cantidad:
  *                 type: number
- *                 description: Cantidad del producto que se mueve
- *               usuario:
- *                 type: string
- *                 description: Usuario que realiza el movimiento
+ *                 description: Cantidad del movimiento
+ *                 example: 10
  *               productoId:
  *                 type: string
- *                 description: ID del producto que se mueve
+ *                 description: ID del producto
+ *                 example: ABC123
  *               bodegaId:
  *                 type: string
- *                 description: ID de la bodega donde se realiza el movimiento
+ *                 description: ID de la bodega
+ *                 example: BODEGA1
+ *               categoria:
+ *                 type: string
+ *                 description: Categoría del movimiento
+ *                 example: Categoría1
+ *             required:
+ *               - tipo
+ *               - cantidad
+ *               - productoId
+ *               - bodegaId
  *     responses:
  *       200:
- *         description: Movimiento creado correctamente
+ *         description: Movimiento creado exitosamente.
  *         content:
  *           application/json:
  *             schema:
@@ -212,10 +201,10 @@ router.get('/:id', [authJwt.verifyToken], getOneMovimiento);
  *               properties:
  *                 message:
  *                   type: string
- *                   description: Mensaje de confirmación del movimiento creado
+ *                   description: Mensaje de éxito de creación.
  *                   example: Movimiento creado
- *       500:
- *         description: Error al crear el movimiento
+ *       400:
+ *         description: Datos del movimiento inválidos.
  *         content:
  *           application/json:
  *             schema:
@@ -223,8 +212,30 @@ router.get('/:id', [authJwt.verifyToken], getOneMovimiento);
  *               properties:
  *                 error:
  *                   type: string
- *                   description: Mensaje de error que indica lo sucedido
- *                   example: Error al crear el movimiento
+ *                   description: Mensaje de error de datos inválidos.
+ *                   example: Datos del movimiento inválidos
+ *       401:
+ *         description: Token de autenticación inválido o no proporcionado.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Mensaje de error de autenticación inválida.
+ *                   example: Token de autenticación inválido o no proporcionado
+ *       404:
+ *         description: Producto o bodega no encontrados.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Mensaje de error de producto o bodega no encontrados.
+ *                   example: El producto ABC123 no existe
  */
 router.post('/', [authJwt.verifyToken], createMovimiento);
 

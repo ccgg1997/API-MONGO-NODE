@@ -33,6 +33,15 @@ const movimientoSchema = new mongoose.Schema({
     activo: {
       type: Boolean,
       default: true
+    },
+    fechaEliminacion: {
+      type: Date,
+      default: null
+    },
+    categoria: {
+      type: String,
+      enum:['produccion', 'venta', 'devolucion'],
+      required: true
     }
   });
 

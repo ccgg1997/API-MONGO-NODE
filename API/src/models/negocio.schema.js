@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-const moment = require('moment');
+
+
 const negocioSchema = new mongoose.Schema({
   id: {
     type: Number,
@@ -28,24 +29,22 @@ const negocioSchema = new mongoose.Schema({
   },
   ultimoPedido: {
     type: Date,
-    default: Date.now,
-    get:formatoFecha
+    required:true,
   },
   ultimaLlamada: {
-    type: Date,
-    default: Date.now,
-    get:formatoFecha
+    type: String,
+    required:true
     
-  },active:{
+  },
+  active:{
     type: Boolean,
     required:true,
     default:true
   }
 });
 
-function formatoFecha(fecha){
-  return moment(fecha).format('DD/MM/YYYY');
-}
+
+
 
 negocioSchema.index({ id: 1 });
 module.exports = mongoose.model('Negocio', negocioSchema);

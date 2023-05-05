@@ -14,8 +14,6 @@ const router = Router();
  *         name: x-access-token
  *     summary: Obtener todos los negocios
  *     description: Endpoint que devuelve una lista de todos los negocios en el sistema
- *     security:
- *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Lista de negocios recuperada con éxito
@@ -27,21 +25,32 @@ const router = Router();
  *                 type: object
  *                 properties:
  *                   id:
- *                     type: string
+ *                     type: number
  *                     description: ID del negocio
- *                   nombre:
+ *                   negocio:
  *                     type: string
- *                     description: Nombre de usuario del usuario
+ *                     description: Nombre del negocio
  *                   duenio:
  *                     type: string
- *                     description: Correo electrónico del usuario
- *                   direccion:
- *                     type: string
- *                     description: Dirección del negocio 
+ *                     description: Dueño del negocio
  *                   telefono:
  *                     type: string
  *                     description: Teléfono del negocio
- *                   activo:
+ *                   direccion:
+ *                     type: string
+ *                     description: Dirección del negocio 
+ *                   barrio:
+ *                     type: string
+ *                     description: Barrio del negocio
+ *                   ultimoPedido:
+ *                     type: string
+ *                     format: date-time
+ *                     description: Último pedido realizado por el negocio
+ *                   ultimaLlamada:
+ *                     type: string
+ *                     format: date-time
+ *                     description: Última llamada realizada por el negocio
+ *                   active:
  *                     type: boolean
  *                     description: Indica si el negocio está activo o no
  *       500:
@@ -54,39 +63,30 @@ const router = Router();
  *                 message:
  *                   type: string
  *                   description: Mensaje de error
- *     securitySchemes:
- *       bearerAuth:
- *         type: http
- *         scheme: bearer
- *         bearerFormat: JWT
  */
 router.get('/',[authJwt.verifyToken],getNegocio);
+
 
 /**
  * @swagger
  * /api/negocio/{id}:
  *   get:
  *     tags:
- *      - Negocios
- *     summary: Obtener un negocio por su ID
- *     description: Endpoint que permite obtener un negocio por su ID
+ *       - Negocios
  *     parameters:
  *       - in: header
  *         name: x-access-token
- *         schema:
- *           type: string
- *         required: true
- *         description: Token de autenticación JWT para acceder al endpoint 
  *       - in: path
  *         name: id
  *         schema:
  *           type: string
  *         required: true
  *         description: ID del negocio a obtener
- *         
+ *     summary: Obtener negocio por Id
+ *     description: Endpoint que devuelve una lista de todos los negocios en el sistema
  *     responses:
  *       200:
- *         description: Negocio obtenido con éxito
+ *         description: Lista de negocios recuperada con éxito
  *         content:
  *           application/json:
  *             schema:
@@ -95,25 +95,36 @@ router.get('/',[authJwt.verifyToken],getNegocio);
  *                 type: object
  *                 properties:
  *                   id:
- *                     type: string
+ *                     type: number
  *                     description: ID del negocio
- *                   nombre:
+ *                   negocio:
  *                     type: string
- *                     description: Nombre de usuario del usuario
+ *                     description: Nombre del negocio
  *                   duenio:
  *                     type: string
- *                     description: Correo electrónico del usuario
- *                   direccion:
- *                     type: string
- *                     description: Dirección del negocio 
+ *                     description: Dueño del negocio
  *                   telefono:
  *                     type: string
  *                     description: Teléfono del negocio
- *                   activo:
+ *                   direccion:
+ *                     type: string
+ *                     description: Dirección del negocio 
+ *                   barrio:
+ *                     type: string
+ *                     description: Barrio del negocio
+ *                   ultimoPedido:
+ *                     type: string
+ *                     format: date-time
+ *                     description: Último pedido realizado por el negocio
+ *                   ultimaLlamada:
+ *                     type: string
+ *                     format: date-time
+ *                     description: Última llamada realizada por el negocio
+ *                   active:
  *                     type: boolean
  *                     description: Indica si el negocio está activo o no
- *       404:        
- *         description: Negocio no encontrado
+ *       500:
+ *         description: Error en el servidor
  *         content:
  *           application/json:
  *             schema:
@@ -148,32 +159,64 @@ router.get('/:id',[authJwt.verifyToken],getOneNegocio);
  *             type: object
  *             properties:
  *               id:
- *                 type: string
+ *                 type: number
  *                 description: ID del negocio
+ *                 example: 123
  *               negocio:
  *                 type: string
  *                 description: Nombre del negocio
+ *                 example: "Restaurante XYZ"
  *               duenio:
  *                 type: string
  *                 description: nombre del dueño del negocio
+ *                 example: "Juan Pérez"
  *               direccion:
  *                 type: string
  *                 description: Dirección del negocio 
+ *                 example: "Calle 123 #45-67"
  *               telefono:
  *                 type: string
  *                 description: Teléfono del negocio
+ *                 example: "1234567"
  *               barrio:
  *                 type: string
  *                 description: Barrio del negocio
+ *                 example: "Centro"
  *     responses:
  *       '201':
  *         description: Registro de Negocio creado con éxito
  *       '400':
  *         description: Parámetros inválidos proporcionados en la solicitud
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Descripción del error
+ *                 errors:
+ *                   type: array
+ *                   description: Lista de errores de validación
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       field:
+ *                         type: string
+ *                         description: Nombre del campo que falló en la validación
+ *                       message:
+ *                         type: string
+ *                         description: Descripción del error de validación
  *       '500':
  *         description: Error interno del servidor
- *     security:
- *       - bearerAuth: []
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Descripción del error
  */
 router.post('/',[authJwt.verifyToken],createNegocio);
 
@@ -224,6 +267,7 @@ router.post('/',[authJwt.verifyToken],createNegocio);
  *               active:
  *                 type: boolean
  *                 description: Indica si el negocio fue eliminado o no
+ * 
  *     responses:
  *       200:
  *         description: Usuario actualizado con éxito
@@ -290,7 +334,7 @@ router.put('/:id',[authJwt.verifyToken],updateNegocio);
  *         required: true
  *         description: Token de autenticación JWT para acceder al endpoint
  *       - in: path
- *         id: id
+ *         name: id
  *         required: true
  *         description: identificador del negocio a eliminar
  *         schema:
