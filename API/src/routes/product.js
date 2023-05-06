@@ -361,7 +361,7 @@ router.post('/',[authJwt.verifyToken],createProduct);
  *                   type: string
  *                   description: Mensaje de error.
  */
-router.delete('/:producto_id',[authJwt.verifyToken,authJwt.isAdmin],deleteProduct);
+router.delete('/:producto_id',[authJwt.verifyToken],deleteProduct);
 
 /**
  * @swagger
@@ -370,8 +370,6 @@ router.delete('/:producto_id',[authJwt.verifyToken,authJwt.isAdmin],deleteProduc
  *     summary: Modificar producto por producto_id
  *     tags:
  *       - Products
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: header
  *         name: x-access-token
@@ -546,4 +544,5 @@ router.put('/productBodega/:producto_id',[authJwt.verifyToken],updateProductBode
  *                   type: string
  */
 router.put('/precioEspecialProd/:producto_id',[authJwt.verifyToken],updatePrecioProducto);
+
 module.exports = router;
