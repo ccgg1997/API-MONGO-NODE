@@ -35,11 +35,11 @@ const createMovimiento = async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    let { tipo, cantidad, productoId, bodegaId,categoria } = req.body;
+    const { tipo, cantidad,categoria } = req.body;
     //formato de datos
     fecha = new Date();
-    productoId = productoId.toUpperCase().trim();
-    bodegaId = bodegaId.toUpperCase().trim();
+    const productoId = parserword(req.body.productoId);
+    const bodegaId = parserword(req.body.bodegaId);
     tipo=tipo.toLowerCase().trim();
 
     //extrayendo el usuario del token
@@ -82,7 +82,6 @@ const createMovimiento = async (req, res) => {
   }
 };
 
-
 //funcion para elminar movimiento por id
 const deleteMovimiento = async (req, res) => {
   try {
@@ -99,7 +98,7 @@ const deleteMovimiento = async (req, res) => {
     const productoId=movimiento.productoId;
     
     if (!movimiento || !movimiento.activo ) return res.status(404).json({ message: 'Movimiento no encontrado o inactivo' });
-   //console.log(cantidad, tipo, bodegaId, productoId);
+    //console.log(cantidad, tipo, bodegaId, productoId);
     //console.log(movimiento);
     
     const productoModificado= await productoSchema.findOneAndUpdate(
@@ -115,7 +114,11 @@ const deleteMovimiento = async (req, res) => {
   }
 };
 
-
+//funcion para parsear una palabra(quita espacios y pone en mayus todo)
+const parserword = (word) => {
+  return word.toUpperCase().trim();
+};
+  
 
 module.exports = {
 

@@ -75,6 +75,12 @@ router.get('/',[authJwt.verifyToken],getBodega);
  *         description: ID de la Bodega a buscar
  *         schema:
  *           type: string
+ *       - in: header
+ *         name: x-access-token
+ *         required: true
+ *         description: Token de acceso a la API.
+ *         schema:
+ *           type: string
  *     responses:
  *       '200':
  *         description: Bodega encontrada exitosamente

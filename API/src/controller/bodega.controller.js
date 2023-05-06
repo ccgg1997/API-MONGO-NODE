@@ -1,6 +1,5 @@
 const { request } = require('express');
 const bodegaSchema = require('../models/bodega.schema');
-const jwt = require('jsonwebtoken');
 
 //get inventario
 const getBodega = async (req, res) => {
@@ -12,9 +11,10 @@ const getBodega = async (req, res) => {
     }
   };
 
+//get one bodega, retorna 1 bodega por id
 const getOneBodega = async (req, res) => {
     try {
-    const bodegaId  = req.params.bodegaId;
+    const bodegaId  = parserword(req.params.bodegaId);
     console.log("checkpoint getonebodega:: ", bodegaId);
     const data = await bodegaSchema.findOne({bodegaId:bodegaId});
     if (!data) {
@@ -28,19 +28,20 @@ const getOneBodega = async (req, res) => {
 
 // Crear nuevo Bodega
 const createBodega = async (req, res) => {
-  const { bodegaId, bodegaNombre } = req.body;
+  const  bodegaId = parserword(req.body.bodegaId);
+  const bodegaNombre = parserword(req.body.bodegaNombre);
 
   if (!bodegaNombre) {
       return res.status(400).json({ message: "No se proporcionó un nombre de bodega" });
   }
 
-  const nombreBodega = bodegaNombre.toUpperCase().trim();
+  //const nombreBodega = bodegaNombre.toUpperCase().trim();
 
   try {
       // Crear nuevo registro de Bodega
       const nuevaBodega = bodegaSchema({
           bodegaId,
-          bodegaNombre: nombreBodega
+          bodegaNombre: bodegaNombre
       });
 
       // Guardar registro en la base de datos
@@ -86,7 +87,7 @@ const createBodega = async (req, res) => {
 
 const deleteBodega = async (req, res) => {
     try {
-        const { bodegaId } = req.params;
+        const { bodegaId } = parserword(req.params.bodegaId);
         console.log("checkpoint delete:: ", bodegaId);
         const data = await bodegaSchema.findOneAndUpdate({ bodegaId: bodegaId },
           { $set: {activo:false } },
@@ -100,5 +101,9 @@ const deleteBodega = async (req, res) => {
     }
 };
 
+//funcion para parsear una palabra(quita espacios y pone en mayus todo)
+const parserword = (word) => {
+  return word.toUpperCase().trim();
+};
 
   module.exports = {getBodega,getOneBodega,createBodega,deleteBodega};

@@ -14,8 +14,8 @@ const getProduct = (req, res) => {
 
 //get product by product_id
 const getOneProduct = async(req, res) => { 
-    const producto_id = req.params.producto_id;
-    //console.log(producto_id);
+    const producto_id = parserword(req.params.producto_id);
+    //console.log('check point get oneproduct parserword',producto_id);
     try {
         await productSchema
               .findOne({producto_id:producto_id})
@@ -105,8 +105,8 @@ const createProduct = async (req, res) => {
 
 //delete product, change active to false, not delete from database 
 const deleteProduct = (req, res) => {
-  const producto_id = req.params.producto_id;
-  console.log(producto_id);
+  const producto_id = parserword(req.params.producto_id);
+  //console.log('checkpoint deleteproduct' +producto_id);
   try {
     if (producto_id) {
       productSchema
@@ -125,7 +125,7 @@ const deleteProduct = (req, res) => {
 // Actualizar la función updateProduct
 const updateProduct = async (req, res) => {
   try {;
-    const { producto_id } = req.params;
+    const { producto_id } = parserword(req.params);
     const { nombre, precio_regular, precio_especial, familia_id,bodegas,cantidadTotal } = req.body;
 
     // Validar que al menos uno de los parámetros está presente
@@ -267,6 +267,11 @@ const updateProductBodega = async (req, res) => {
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
+};
+
+//funcion para parsear una palabra(quita espacios y pone en mayus todo)
+const parserword = (word) => {
+  return word.toUpperCase().trim();
 };
   
 module.exports = {getProduct,createProduct,deleteProduct,getOneProduct,updateProduct,updateProductBodega,updatePrecioProducto};
