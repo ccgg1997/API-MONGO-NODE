@@ -31,12 +31,10 @@ const createBodega = async (req, res) => {
   const  bodegaId = parserword(req.body.bodegaId);
   const bodegaNombre = parserword(req.body.bodegaNombre);
 
+  // Validar que se proporcionó un nombre de bodega
   if (!bodegaNombre) {
       return res.status(400).json({ message: "No se proporcionó un nombre de bodega" });
   }
-
-  //const nombreBodega = bodegaNombre.toUpperCase().trim();
-
   try {
       // Crear nuevo registro de Bodega
       const nuevaBodega = bodegaSchema({
@@ -87,7 +85,7 @@ const createBodega = async (req, res) => {
 
 const deleteBodega = async (req, res) => {
     try {
-        const { bodegaId } = parserword(req.params.bodegaId);
+        const bodegaId  = parserword(req.params.bodegaId);
         console.log("checkpoint delete:: ", bodegaId);
         const data = await bodegaSchema.findOneAndUpdate({ bodegaId: bodegaId },
           { $set: {activo:false } },

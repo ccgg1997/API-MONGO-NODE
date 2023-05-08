@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { getMovimiento,getOneMovimiento, createMovimiento,deleteMovimiento} = require('../controller/movimiento.controller');
+const { getMovimiento,getOneMovimiento, createMovimiento,deleteMovimiento,createMovEntreBodegas} = require('../controller/movimiento.controller');
 const { authJwt } = require('../middlewares');
 const router = Router();
 
@@ -147,6 +147,63 @@ router.get('/', [authJwt.verifyToken], getMovimiento);
  * 
  */ 
 router.get('/:id', [authJwt.verifyToken], getOneMovimiento);
+
+/**
+ * @swagger
+ * /api/movimiento/moventrebodegas:
+ *   post:
+ *     summary: Crear un nuevo movimiento entre bodegas.
+ *     description: Crear un nuevo movimiento de tipo entrada y salida en dos bodegas distintas de un mismo producto.
+ *     tags: [Movimiento]
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         description: Token de autenticación JWT.
+ *         required: true
+ *         type: string
+ *     requestBody:
+ *       description: Objeto JSON con los datos necesarios para crear el movimiento entre bodegas.
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               productoId:
+ *                 type: string
+ *                 description: ID del producto que se desea mover entre bodegas.
+ *               bodegaId1:
+ *                 type: string
+ *                 description: ID de la bodega de salida.
+ *               bodegaId2:
+ *                 type: string
+ *                 description: ID de la bodega de entrada.
+ *               cantidad:
+ *                 type: number
+ *                 description: Cantidad de unidades del producto a mover entre bodegas.
+ *     responses:
+ *       200:
+ *         description: Movimiento creado exitosamente.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Mensaje de éxito.
+ *       500:
+ *         description: Error al crear el movimiento.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Mensaje de error.
+ */
+router.post('/moventrebodegas', [authJwt.verifyToken], createMovEntreBodegas);
 
 /**
  * @swagger

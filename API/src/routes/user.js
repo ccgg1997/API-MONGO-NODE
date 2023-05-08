@@ -120,9 +120,10 @@ router.post('/signin',signIn);
  *     tags:
  *       - Users
  *     summary: Obtener todos los usuarios
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
  *     description: Endpoint que devuelve una lista de todos los usuarios en el sistema
- *     security:
- *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Lista de usuarios recuperada con éxito
@@ -152,11 +153,6 @@ router.post('/signin',signIn);
  *                 message:
  *                   type: string
  *                   description: Mensaje de error
- *     securitySchemes:
- *       bearerAuth:
- *         type: http
- *         scheme: bearer
- *         bearerFormat: JWT
  */
 router.get('/', getUser);
 
@@ -173,7 +169,6 @@ router.get('/', getUser);
  *         name: x-access-token
  *         schema:
  *           type: string
- *         required: true
  *         description: Token de autenticación JWT para acceder al endpoint 
  *       - in: path
  *         name: id
@@ -231,7 +226,6 @@ router.get('/:id',authJwt.verifyToken,getOneUser);
  *         name: x-access-token
  *         schema:
  *           type: string
- *         required: true
  *         description: Token de autenticación JWT para acceder al endpoint 
  *       - in: path
  *         name: id
@@ -313,7 +307,7 @@ router.get('/:id',authJwt.verifyToken,getOneUser);
  *                   type: string
  *                   description: Mensaje de error
  */
-router.put('/:id', authJwt.isAdmin,updateUser);
+router.put('/:id',[authJwt.verifyToken,authJwt.isAdmin,updateUser]);
 
 
 /**
@@ -329,7 +323,6 @@ router.put('/:id', authJwt.isAdmin,updateUser);
  *         name: x-access-token
  *         schema:
  *           type: string
- *         required: true
  *         description: Token de autenticación JWT para acceder al endpoint
  *       - in: path
  *         name: cedula
@@ -372,7 +365,7 @@ router.put('/:id', authJwt.isAdmin,updateUser);
  *                   type: string
  *                   description: Mensaje de error
  */
-router.delete('/:id', authJwt.isAdmin ,deleteUser);
+router.delete('/:id',[authJwt.verifyToken, authJwt.isAdmin ,deleteUser]);
 
 
 module.exports = router;

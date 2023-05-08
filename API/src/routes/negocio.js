@@ -148,7 +148,6 @@ router.get('/:id',[authJwt.verifyToken],getOneNegocio);
  *         name: x-access-token
  *         schema:
  *           type: string
- *         required: true
  *         description: Token de autenticación JWT para acceder al endpoint
  *     requestBody:
  *       description: Objeto JSON que contiene los datos del Negocio a crear
@@ -233,7 +232,6 @@ router.post('/',[authJwt.verifyToken],createNegocio);
  *         name: x-access-token
  *         schema:
  *           type: string
- *         required: true
  *         description: Token de autenticación JWT para acceder al endpoint 
  *       - in: path
  *         name: id
@@ -331,7 +329,6 @@ router.put('/:id',[authJwt.verifyToken],updateNegocio);
  *         name: x-access-token
  *         schema:
  *           type: string
- *         required: true
  *         description: Token de autenticación JWT para acceder al endpoint
  *       - in: path
  *         name: id

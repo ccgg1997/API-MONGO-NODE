@@ -34,21 +34,22 @@ const getOneProduct = async(req, res) => {
 
 //create product
 const createProduct = async (req, res) => {
-
+try {
   //obteniendo variables del body
   const { producto_id, precio_regular, precio_especial, familia_id,
-    nombre, bodegas, cantidadTotal } = req.body;
+    nombre, bodegas } = req.body;
   const activo = true;
+  let cantidadTotal = 0;
   
   //validando que se ingresen todos los datos
-  if(!producto_id && !precio_regular & !familia_id && !nombre && !bodegas && !cantidadTotal){
+  if(producto_id==null || precio_regular==null || familia_id==null || nombre==null  || bodegas==null ){
     return res.status(400).json({ message: "no se ingresaron datos" });
   }
 
-  //validando que no se ingrese un nombre de bodega que no existe
+  //validando que no se ingrese un nombre de bodega que no existe (arreglo de bodegas)
   if( bodegas !=undefined && bodegas.length > 0){
     for (let i = 0; i < bodegas.length; i++) {
-      if(!bodegas[i].nombreBodega){
+      if(bodegas[i].nombreBodega===null || bodegas[i].bodegaId===null){
         return res.status(400).json({ message: "no se ingresaron datos de bodegas" });
       }
       const nombreBodegaParseado = bodegas[i].nombreBodega.toUpperCase().trim();
@@ -56,15 +57,15 @@ const createProduct = async (req, res) => {
         ...bodegas[i],
         nombreBodega: nombreBodegaParseado
       }
-
       const bodegaExistente = await bodegaSchema.findOne({ bodegaNombre: nombreBodegaParseado });
       if (bodegaExistente === null || bodegaExistente === undefined) {
         return res.status(400).json({ message: `La bodega ${bodegas[i].nombreBodega} no existe en la empresa.` });
       }
+      cantidadTotal = cantidadTotal + bodegas[i].cantidad;
     }
   }
 
-  //validando que no se ingrese un precio especial sin cliente o con un cliente que no existe
+  //validando que no se ingrese un precio especial sin cliente o con un cliente que no existe (arreglo de precios especiales)
   if(precio_especial !=undefined){
     for (let i = 0; i < precio_especial.length; i++) {
       if(!precio_especial[i].cliente_id){
@@ -76,9 +77,8 @@ const createProduct = async (req, res) => {
       }
     }
   }
- 
- 
-  try {
+
+  
     const product_id_parseado= producto_id.toUpperCase().trim();
     const nombre_parseado = nombre.toUpperCase().trim();
     console.log("creando producto... antes del schema")
@@ -124,8 +124,8 @@ const deleteProduct = (req, res) => {
 
 // Actualizar la función updateProduct
 const updateProduct = async (req, res) => {
-  try {;
-    const { producto_id } = parserword(req.params);
+  try {
+    const producto_id=parserword(req.params.producto_id);
     const { nombre, precio_regular, precio_especial, familia_id,bodegas,cantidadTotal } = req.body;
 
     // Validar que al menos uno de los parámetros está presente
@@ -200,11 +200,18 @@ const updateProductBodega = async (req, res) => {
     //tomar variables del body y params
     const { producto_id } = req.params;
     const { bodega,cantidad } = req.body;
-    
+
+    //validar que se ingresen todos los datos
+    if(bodega===undefined || producto_id===null || cantidad===""){
+      throw new Error("No se ingresó informacion completa");
+    }
+
+    //parsear nombre bodega
+    const nombreBodegaParseado = bodega.toUpperCase().trim();
 
     //evaluar que exista el producto
     const producto_idParseado = producto_id.toUpperCase().trim();
-    const producto = await productSchema.findOne({ producto_id: producto_idParseado });
+    const producto = await productSchema.findOne({ producto_id: producto_idParseado});
     if (!producto) {
       throw new Error(`El producto ${producto_id} no existe`);
     }
@@ -212,25 +219,34 @@ const updateProductBodega = async (req, res) => {
     
 
     //evaluar que exista la bodega
-    const nombreBodegaParseado = bodega.toUpperCase().trim();
     const isInBodega = await bodegaSchema.findOne({ bodegaNombre: nombreBodegaParseado});
     if (isInBodega===null || isInBodega===undefined) {
       throw new Error(`La bodega ${bodega} no existe para el producto ${producto_id}`);
     }
     console.log("check point 2",producto_idParseado,nombreBodegaParseado, isInBodega);
+    
+    //cantidad vieja bodega
+    const cantidadBodegaEA01 = producto.bodegas.reduce((total, bodega) => {
+      return bodega.bodegaId === 'EA01' ? total + bodega.cantidad : total;
+    }, 0);
+    const cantidadBodegaVieja = cantidadBodegaEA01;
+    console.log("check point 2.1 bodega vieja",cantidadBodegaVieja, 'cantidad total vieja', producto.cantidadTotal);
+
+    //cantidad total nueva
+    const cantidadTotalNueva= (producto.cantidadTotal - cantidadBodegaVieja) + cantidad;
 
     //hacer cambios en la bodega
     const productoActualizado=await productSchema.findOneAndUpdate(
       { producto_id: producto_idParseado, "bodegas.nombreBodega": nombreBodegaParseado},
       {
         $set: {
-          "bodegas.$.cantidad": cantidad,
+          "bodegas.$.cantidad": cantidad, "cantidadTotal": cantidadTotalNueva
         },
       },
     );
 
     if(!productoActualizado){
-      throw new Error(`El producto ${producto_id} no existe en la bodega ${bodega}`);
+      throw new Error(`El producto ${producto_id} se pudo actualizar en la bodega ${bodega}`);
     }
     console.log("check point 3",productoActualizado);
     res.json({ message: 'Bodega actualizada' });

@@ -37,6 +37,11 @@ const productSchema = mongoose.Schema({
     default: true,
   },
   bodegas:[{
+    
+    bodegaId: {
+      type: String,
+      required: true,
+    },
     nombreBodega: {
       type: String,
   

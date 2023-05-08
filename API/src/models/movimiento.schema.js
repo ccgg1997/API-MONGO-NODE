@@ -40,7 +40,7 @@ const movimientoSchema = new mongoose.Schema({
     },
     categoria: {
       type: String,
-      enum:['produccion', 'venta', 'devolucion'],
+      enum:['produccion', 'venta', 'devolucion','surtidoEntreBodega'],
       required: true
     }
   });

@@ -13,13 +13,16 @@ const signUp = async (req,res)=>{
 
 const signIn = async (req,res)=>{
     const userFound = await userSchema.findOne({id:req.body.id});
+    const role = userFound.roles;
+    console.log("userFound" + userFound)
     if(!userFound || !userFound.access) return res.status(400).json({message:"user not found or access denied",token:null});
     const CorrectPassword = await userSchema.comparePassword( req.body.password, userFound.password);
     if(!CorrectPassword) return res.status(400).json({token:null,message:"invalid password or user not found"});
-    const dateToCompare = new Date("2023-05-04");
-    const currentDate = new Date();
-    let time =currentDate.toDateString() === dateToCompare.toDateString() ? '600000s' : '600s';
-    const token = jwt.sign({ id: userFound._id, idUser: userFound.id, name: userFound.name },config.SECRET,{expiresIn:time});
+    // const dateToCompare = new Date("2023-05-06");
+    // const currentDate = new Date();
+    // let time =currentDate.toDateString() === dateToCompare.toDateString() ? '60000000s' : '600s';
+    const time = '600s';
+    const token = jwt.sign({ id: userFound._id, idUser: userFound.id, name: userFound.name, roles: role },config.SECRET,{expiresIn:time});
     console.log("userFound" + userFound + "-TIME: "+ time);
     res.json({token:token});
 }
@@ -36,7 +39,7 @@ const createUser = async (req, res) => {
             email,
             password: hashedPassword,
             id,
-            deleted: req.body.deleted || true
+            deleted: false
         };
 
         if(roles){
@@ -67,7 +70,7 @@ const createUser = async (req, res) => {
 const getUser = (req, res) => { 
     
     userSchema
-        .find()
+        .find({deleted:false})
         .then((data) => res.json(data))
         .catch((error)=> res.json({message: error}));
     //res.json({ message: ' agregado' });
@@ -82,26 +85,32 @@ const getOneUser = (req, res) => {
         .then((data) => res.json(data))
         .catch((error)=> res.json({message: error}));
     //res.json({ message: ' agregado' });
-};
+}; 
 
 
 //update user
 const updateUser = (req, res) => {  
-    const {id} = req.params;
-    const {name, email, password, rol,deleted,access} = req.body;
-    userSchema
-        .updateOne({id: id}, { $set:{name, email, password, rol,deleted,access}})
-        .then((data) => res.json(data))
-        .catch((error)=> res.json({message: error}));
+    try{
+        const {id} = req.params;
+        const {name, email, password, rol,deleted,access} = req.body;
+        console.log("id: "+id+" name: "+name+" email: "+email+" password: "+password+" rol: "+rol+" deleted: "+deleted+" access: "+access);
+        userSchema
+            .updateOne({id: id}, { $set:{name, email, password, rol,deleted,access}})
+            .then((data) => res.json(data))
+            .catch((error)=> res.json({message: error}));
+    }catch(error){
+        console.error(error);
+        res.status(500).json({ message: error });
+    }
 };
 
 //delete user
 const deleteUser = (req, res) => {  
     const {id} = req.params;
-    const auxdeleted =false;
+    const auxdeleted =true;
     
     userSchema
-        .updateOne({id: id}, { $set:{deleted: auxdeleted}})
+        .updateOne({id: id}, { $set:{deleted: auxdeleted,access: false}})
         .then((data) => res.json(data))
         .catch((error)=> res.json({message: error}));
 

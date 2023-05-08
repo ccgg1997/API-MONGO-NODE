@@ -33,12 +33,18 @@ app.use('/api/bodega', require('./routes/bodega'));
 app.use('/api/negocio', require('./routes/negocio'));
 app.use('/api/movimiento', require('./routes/movimiento'));
 
+//swagger docs
+swaggerDocs(app,port);
+
+//route doesn't exist, endpoint not found
+app.use(function(req, res, next) {
+  res.status(404).send('404 - La ruta solicitada no existe.');
+});
+
 //starting the server
 app.listen(port, () => {
   console.log('Server on port', port);
-  swaggerDocs(app,port);
 });
-
 
 
 

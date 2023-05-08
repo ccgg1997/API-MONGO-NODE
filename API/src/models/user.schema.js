@@ -7,18 +7,20 @@ const userSchema = new mongose.Schema({
     password: { type: String, required: true },
     id: { type: String, required: true, unique: true },
     deleted: { type: Boolean, default :false},
-    access: { type: Boolean, default: false},
+    access: { type: Boolean, default: true},
     roles:[{
         ref:"roles",
         type:mongose.Schema.Types.ObjectId
-    }
-    ]
-
+    }]
 },
 {
-    timestamps:true
-}
-);
+    timestamps:{
+        createdAt: 'createdAt',
+        updatedAt: 'updatedAt',
+        timezone: 'America/Bogota' // establece la zona horaria a UTC-5
+    }
+});
+
 
 userSchema.statics.comparePassword = async (password,receivedPassword) => {
     return await bcrypt.compare(password,receivedPassword);

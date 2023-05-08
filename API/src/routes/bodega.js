@@ -77,7 +77,6 @@ router.get('/',[authJwt.verifyToken],getBodega);
  *           type: string
  *       - in: header
  *         name: x-access-token
- *         required: true
  *         description: Token de acceso a la API.
  *         schema:
  *           type: string
@@ -126,7 +125,6 @@ router.get('/:bodegaId',[authJwt.verifyToken],getOneBodega);
  *     parameters:
  *       - in: header
  *         name: x-access-token
- *         required: true
  *         description: Token de acceso a la API.
  *     responses:
  *       '201':

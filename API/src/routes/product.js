@@ -13,7 +13,6 @@ const router=Router();
  *     parameters:
  *       - in: header
  *         name: x-access-token
- *         required: true
  *         description: Token de acceso a la API.
  *     responses:
  *       '200':
@@ -80,7 +79,7 @@ const router=Router();
  *           type: number
  *           example: 50
  */
-router.get('/',authJwt.verifyToken, getProduct);
+router.get('/',[authJwt.verifyToken], getProduct);
 
 /**
  * @swagger
@@ -98,7 +97,6 @@ router.get('/',authJwt.verifyToken, getProduct);
  *           type: string
  *       - in: header
  *         name: x-access-token
- *         required: true
  *         description: Token de acceso a la API.
  *     responses:
  *       '200':
@@ -188,7 +186,6 @@ router.get('/:producto_id',[authJwt.verifyToken],getOneProduct);
  *     parameters:
  *       - in: header
  *         name: x-access-token
- *         required: true
  *         description: Token de acceso a la API.
  *     requestBody:
  *       description: Datos del producto a crear.
@@ -232,12 +229,12 @@ router.get('/:producto_id',[authJwt.verifyToken],getOneProduct);
  *                     nombreBodega:
  *                       type: string
  *                       example: 'Bodega 1'
+ *                     bodegaId:
+ *                       type: string
+ *                       example: 'e013' 
  *                     cantidad:
  *                       type: number
  *                       example: 10
- *               cantidadTotal:
- *                 type: number
- *                 example: 50
  *     responses:
  *       '200':
  *         description: Objeto con el producto creado.
@@ -299,7 +296,6 @@ router.get('/:producto_id',[authJwt.verifyToken],getOneProduct);
  *                 example: 10
  *         cantidadTotal:
  *           type: number
- *           example: 50
  */
 router.post('/',[authJwt.verifyToken],createProduct);
 
@@ -315,7 +311,6 @@ router.post('/',[authJwt.verifyToken],createProduct);
  *         name: x-access-token
  *         schema:
  *           type: string
- *         required: true
  *         description: Token de autenticación JWT para acceder al endpoint 
  *       - in: path
  *         name: producto_id
@@ -440,15 +435,12 @@ router.put('/:producto_id',[authJwt.verifyToken],updateProduct);
  *     summary: Modificar cantidad del producto en bodega especifica
  *     tags:
  *       - Products
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: header
  *         name: x-access-token
  *       - in: path
  *         name: producto_id
  *         description: ID del producto a modificar
- *         required: true
  *         schema:
  *           type: string
  *     requestBody:
@@ -496,8 +488,6 @@ router.put('/productBodega/:producto_id',[authJwt.verifyToken],updateProductBode
  *     summary: Modificar el precio especial del producto en cliente especifico
  *     tags:
  *       - Products
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: header
  *         name: x-access-token
