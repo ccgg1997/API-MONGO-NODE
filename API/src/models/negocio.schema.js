@@ -44,7 +44,5 @@ const negocioSchema = new mongoose.Schema({
 });
 
 
-
-
 negocioSchema.index({ id: 1 });
 module.exports = mongoose.model('Negocio', negocioSchema);

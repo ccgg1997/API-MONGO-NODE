@@ -78,7 +78,6 @@ router.get('/', [authJwt.verifyToken], getMovimiento);
  *         name: x-access-token
  *       - in: path
  *         name: id
- *         required: true
  *         schema:
  *           type: string
  *         description: ID del movimiento a buscar
@@ -159,7 +158,6 @@ router.get('/:id', [authJwt.verifyToken], getOneMovimiento);
  *       - in: header
  *         name: x-access-token
  *         description: Token de autenticación JWT.
- *         required: true
  *         type: string
  *     requestBody:
  *       description: Objeto JSON con los datos necesarios para crear el movimiento entre bodegas.

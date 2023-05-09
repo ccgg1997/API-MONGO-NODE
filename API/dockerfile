@@ -21,4 +21,5 @@ COPY . .
 
 EXPOSE 6000
 
-CMD [ "npm","run","dev"]
+CMD ["sh", "-c", "npm i && npm run dev"]
+

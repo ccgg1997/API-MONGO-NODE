@@ -14,7 +14,12 @@ const getProduct = (req, res) => {
 
 //get product by product_id
 const getOneProduct = async(req, res) => { 
-    const producto_id = parserword(req.params.producto_id);
+  
+    const pid=req.params.producto_id;
+    if(pid==null || pid==undefined || pid==""){
+        res.status(500).json({ error: "El id es requerido" });
+    }
+    const producto_id = parserword(pid);
     //console.log('check point get oneproduct parserword',producto_id);
     try {
         await productSchema
@@ -108,15 +113,17 @@ const deleteProduct = (req, res) => {
   const producto_id = parserword(req.params.producto_id);
   //console.log('checkpoint deleteproduct' +producto_id);
   try {
+
+    if (producto_id==null || producto_id==undefined || producto_id=="" || producto_id==" " || producto_id=="  " ) {
+      res.status(400).json({ message: 'No se proporcionó el ID del producto' });
+    }
     if (producto_id) {
       productSchema
         .updateOne({ producto_id: producto_id }, { $set: { activo: false } })
         .then((data) => res.json(data))
         .catch((error) => res.json({ message: error }));
     }
-    if (!producto_id) {
-      res.status(400).json({ message: 'No se proporcionó el ID del producto' });
-    }
+
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

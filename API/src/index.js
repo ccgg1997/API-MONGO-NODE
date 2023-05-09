@@ -32,6 +32,8 @@ app.use('/api/products', require('./routes/product'));
 app.use('/api/bodega', require('./routes/bodega'));
 app.use('/api/negocio', require('./routes/negocio'));
 app.use('/api/movimiento', require('./routes/movimiento'));
+app.use('/api/factura', require('./routes/factura'));
+app.use('/api/familia', require('./routes/familia'));
 
 //swagger docs
 swaggerDocs(app,port);
