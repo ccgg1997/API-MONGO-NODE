@@ -1,7 +1,4 @@
  const mongoose = require('mongoose');
- const Factura = require('./factura.schema');
- const Product = require('./product.schema');
- const Familia = require('./familia.schema');
 
 const detalleFacturaSchema = new mongoose.Schema({
     facturaId: {

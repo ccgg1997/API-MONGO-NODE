@@ -80,23 +80,18 @@ router.get('/:id', [authJwt.verifyToken, authJwt.isAdmin], getOneFactura);
  *           schema:
  *             type: object
  *             properties:
- *               fecha:
- *                 type: string
- *                 format: date
- *                 description: Fecha de la factura
- *                 example: 2023-05-09
  *               negocioId:
  *                 type: string
  *                 description: Identificador del negocio asociado a la factura
  *                 example: 12345
- *               negocioNombre:
- *                 type: string
- *                 description: Nombre del negocio asociado a la factura
- *                 example: Mi Negocio
  *               total:
  *                 type: number
  *                 description: Total de la factura
  *                 example: 10000.00
+ *               facturaId:
+ *                 type: string
+ *                 description: Identificador único de la factura
+ *                 example: e11
  *               productos:
  *                 type: array
  *                 description: Detalle de productos de la factura
@@ -106,11 +101,7 @@ router.get('/:id', [authJwt.verifyToken, authJwt.isAdmin], getOneFactura);
  *                     productoId:
  *                       type: string
  *                       description: Identificador del producto
- *                       example: 9876
- *                     productoNombre:
- *                       type: string
- *                       description: Nombre del producto
- *                       example: Producto 1
+ *                       example: E577777
  *                     cantidad:
  *                       type: number
  *                       description: Cantidad del producto en la factura
@@ -122,23 +113,34 @@ router.get('/:id', [authJwt.verifyToken, authJwt.isAdmin], getOneFactura);
  *                     familia:
  *                       type: string
  *                       description: Familia del producto en la factura
- *                       example: Alimentos
+ *                       example: FINA
  *                     detalle:
- *                       type: string
+ *                       type: array
  *                       description: Detalle adicional del producto en la factura
- *                       example: Producto fresco
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           motivo:
+ *                             type: string
+ *                             description: Motivo del detalle
+ *                             example: azul
+ *                           cantidad:
+ *                             type: number
+ *                             description: Cantidad del detalle
+ *                             example: 15
  *             example:
- *               fecha: 2023-05-09
  *               negocioId: 12345
- *               negocioNombre: Mi Negocio
  *               total: 10000.00
- *               detalles:
- *                 - productoId: 9876
+ *               facturaId: e11
+ *               productos:
+ *                 - productoId: E577777
  *                   productoNombre: Producto 1
  *                   cantidad: 2
  *                   precio: 5000.00
- *                   familia: Alimentos
- *                   detalle: Producto fresco
+ *                   familia: FINA
+ *                   detalle: 
+ *                     - motivo: azul
+ *                       cantidad: 15
  *     responses:
  *       '201':
  *         description: Factura creada satisfactoriamente
@@ -171,7 +173,7 @@ router.get('/:id', [authJwt.verifyToken, authJwt.isAdmin], getOneFactura);
  *               properties:
  *                 error:
  *                   type: string
- *                   description: Mensaje de error inter
+ *                   description: Mensaje de error inter        
 */
 router.post('/', [authJwt.verifyToken, authJwt.isAdmin], createFactura);
 
