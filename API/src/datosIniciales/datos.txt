@@ -1,0 +1,32 @@
+"estilos": [
+    {
+      "cantidad":150,"nombre": "BEBE NIÑO",
+    },
+    {
+      "cantidad":150,"nombre": "BEBE NIÑA",
+    },
+    {
+      "cantidad":150,"nombre": "INFANTIL NIÑO",
+    },
+    {
+      "cantidad":150,"nombre": "INFANTIL NIÑA",
+    },
+    {
+      "cantidad":150,"nombre": "HOMBRE",
+    },
+    { 
+      "cantidad":150,"nombre": "DAMA",
+    },
+    {
+      "cantidad":150,"nombre": "SOLOFONDO",
+    },
+    {
+      "cantidad":150,"nombre": "CUMPLEAÑOS",
+    },
+    {
+      "cantidad":150,"nombre": "CORAZONES",
+    },
+    {
+      "cantidad":150,"nombre": "NAVIDAD",
+    }
+  ]

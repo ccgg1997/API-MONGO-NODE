@@ -18,7 +18,7 @@ const verifyToken = async (req, res, next) => {
     req.userId = decoded.id;
     const user = await userSchema.findById(req.userId, { password: 0 });
     if(!user) return res.status(404).send({ message: 'No user found!' });
-        next();
+    next();
     } catch (error) {
         return res.status(401).send({ message: 'Unauthorized!. Please sigIn' });
     }

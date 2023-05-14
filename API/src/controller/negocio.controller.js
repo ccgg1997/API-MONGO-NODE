@@ -41,8 +41,8 @@ const getNegocio = async (req, res) => {
 }
 //obtener un negocio
 const getOneNegocio = async (req, res) => {
-  const { id } = req.params;
   try {
+    const { id } = req.params;
     negocioSchema
       .findOne({ id: id })
       .then((data) => {
@@ -60,7 +60,7 @@ const getOneNegocio = async (req, res) => {
 
 //actualizar un negocio
 const updateNegocio = async (req, res) => {
- 
+  try{
   //tomar datos de id
   const { id } = req.params;
   if (id===null || id===undefined || id==="" || id===" " || isNaN(id)) {
@@ -80,11 +80,14 @@ const updateNegocio = async (req, res) => {
       .updateOne({ id: id }, { $set:{ negocio,duenio,telefono,direccion,barrio,ultimoPedido,ultimaLlamada }})
       .then((data) => res.json({message :"Negocio Actualizado con exito"}))
       .catch((error) => res.json({ message: error }));
-
+  }catch(error){
+    res.status(400).json({message:error.message});
+  }
 }
 
 //eliminar un negocio
 const deleteNegocio = async (req, res) => {
+  try{
   const id  = req.params.id;
   console.log('id',id);
   if (id===null || id===undefined || id==="" || id===" " || isNaN(id)) {
@@ -94,6 +97,9 @@ const deleteNegocio = async (req, res) => {
     .updateOne({id:id},{$set: {active:false}})
     .then((data) => res.json({message:"Negocio eliminado con exito"}))
     .catch((error) => res.json({message:error}))
+  }catch(error){
+    res.status(400).json({message:error.message});
+  }
 }
 
 module.exports = { createNegocio, getNegocio, getOneNegocio, updateNegocio, deleteNegocio };

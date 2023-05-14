@@ -25,12 +25,12 @@ const getFamilia = async (req, res) => {
 // Función para obtener una familia
 const getOneFamilia = async (req, res) => {
 
-    const nombre = req.params.nombre ;
-    console.log("getOneFamilia. checkpoint 1", nombre);
-    if(nombre ===null || nombre ===undefined || nombre ==="" ){
-        return res.status(500).json({ error: "El nombre es requerido" });
-    }
     try {
+        const nombre = req.params.nombre ;
+        console.log("getOneFamilia. checkpoint 1", nombre);
+        if(nombre ===null || nombre ===undefined || nombre ==="" ){
+            return res.status(500).json({ error: "El nombre es requerido" });
+        }
         const familia = await familiaSchema.find({nombre:nombre.toUpperCase()});
         return res.json(familia);
     } catch (err) {
@@ -40,19 +40,19 @@ const getOneFamilia = async (req, res) => {
 
 // Función para crear una familia
 const createFamilia = async (req, res) => {
-    const { nombre, estilos } = req.body;
-    console.log("createFamilia. checkpoint 1", nombre, estilos);
-    if(nombre ===null || nombre ===undefined || nombre ==="" || estilos ===null || estilos ===undefined || estilos ==="" ){
-        return  res.status(500).json({ error: "El nombre y los estilos son requeridos" });
-    }
-
-    //convertir a mayusculas el nombre 
-    const nombreParseado = nombre.toUpperCase();
-    //convertit a mayusculas la lista de estilos
-    const estilosParseados = estilos.map(function (x) {
-        return{ nombre: x.nombre.toUpperCase()};
-    });
     try {
+        const { nombre, estilos } = req.body;
+        console.log("createFamilia. checkpoint 1", nombre, estilos);
+        if(nombre ===null || nombre ===undefined || nombre ==="" || estilos ===null || estilos ===undefined || estilos ==="" ){
+            return  res.status(500).json({ error: "El nombre y los estilos son requeridos" });
+        }
+
+        //convertir a mayusculas el nombre 
+        const nombreParseado = nombre.toUpperCase();
+        //convertit a mayusculas la lista de estilos
+        const estilosParseados = estilos.map(function (x) {
+            return{ nombre: x.nombre.toUpperCase()};
+        });
         const newFamilia = new familiaSchema({
             nombre:nombreParseado,
             estilos:estilosParseados
@@ -73,11 +73,12 @@ const createFamilia = async (req, res) => {
 
 // Función para eliminar una familia
 const deleteFamilia = async (req, res) => {
-    const nombre = req.params.nombre;
-    if(nombre ===null || nombre ===undefined || nombre ==="" ){
-        return res.status(500).json({ error: "El id es requerido" });
-    }
     try {
+        const nombre = req.params.nombre;
+        if(nombre ===null || nombre ===undefined || nombre ==="" ){
+            return res.status(500).json({ error: "El id es requerido" });
+        }
+ 
         await familiaSchema.findOneAndUpdate({ nombre: nombre }, { Active: false });
         return res.json({ message: 'Familia eliminada' });
 

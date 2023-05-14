@@ -30,7 +30,11 @@ const facturaSchema = new mongoose.Schema({
     fechaEliminacion: {
         type: Date,
         default: null
-    }
+    },
+    pagada: {
+        type: Boolean,
+        default: false
+    },
 });
 
 module.exports = mongoose.model('Factura', facturaSchema);

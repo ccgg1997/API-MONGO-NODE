@@ -123,6 +123,17 @@ router.get('/', [authJwt.verifyToken], getMovimiento);
  *                 categoria:
  *                   type: string
  *                   description: Categoría del movimiento (producción, venta o devolución)
+ *                 estilos:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       nombre:
+ *                         type: string
+ *                         description: El nombre del estilo a actualizar
+ *                       cantidad:
+ *                         type: integer
+ *                         description: La cantidad a incrementar o decrementar
  *       404:
  *         description: Movimiento no encontrado
  *         content:
@@ -179,6 +190,17 @@ router.get('/:id', [authJwt.verifyToken], getOneMovimiento);
  *               cantidad:
  *                 type: number
  *                 description: Cantidad de unidades del producto a mover entre bodegas.
+ *               estilos:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     nombre:
+ *                       type: string
+ *                       description: El nombre del estilo a actualizar
+ *                     cantidad:
+ *                       type: integer
+ *                       description: La cantidad a incrementar o decrementar
  *     responses:
  *       200:
  *         description: Movimiento creado exitosamente.
@@ -241,6 +263,17 @@ router.post('/moventrebodegas', [authJwt.verifyToken], createMovEntreBodegas);
  *                 type: string
  *                 description: Categoría del movimiento
  *                 example: Categoría1
+ *               estilos:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     nombre:
+ *                       type: string
+ *                       description: El nombre del estilo a actualizar
+ *                     cantidad:
+ *                       type: integer
+ *                       description: La cantidad a incrementar o decrementar
  *             required:
  *               - tipo
  *               - cantidad

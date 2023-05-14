@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const movimientoSchema = new mongoose.Schema({
     tipo: {
       type: String,
-      enum: ['entrada', 'salida'],
+      enum: ['ENTRADA', 'SALIDA'],
       required: true
     },
     fecha: {
@@ -40,9 +40,24 @@ const movimientoSchema = new mongoose.Schema({
     },
     categoria: {
       type: String,
-      enum:['produccion', 'venta', 'devolucion','surtidoEntreBodega'],
+      enum:['PRODUCCION', 'VENTA', 'DEVOLUCION','SURTIDOENTREBODEGA'],
       required: true
-    }
+    },
+    estilos:[
+      {
+          nombre: {
+              type: String,
+              required: true,
+
+          },
+          cantidad: {
+              type: Number,
+              required: true,
+              min: 0
+          }
+      }
+    ]
+
   });
 
 module.exports =  mongoose.model('Movimiento', movimientoSchema);

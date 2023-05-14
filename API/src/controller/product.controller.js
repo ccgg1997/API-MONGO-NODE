@@ -6,32 +6,37 @@ const bodegaSchema = require('../models/bodega.schema');
 
 //get all Products
 const getProduct = (req, res) => {
-  productSchema
+  try
+  {productSchema
     .find({ activo: true }) // Agrega un filtro para activo=true
     .then((data) => res.json(data))
     .catch((error) => res.json({ message: error }));
+  }
+  catch (error) {
+    res.status(400).json({ message: error.message });
+  }
 };
 
 //get product by product_id
 const getOneProduct = async(req, res) => { 
-  
-    const pid=req.params.producto_id;
-    if(pid==null || pid==undefined || pid==""){
-        res.status(500).json({ error: "El id es requerido" });
-    }
-    const producto_id = parserword(pid);
-    //console.log('check point get oneproduct parserword',producto_id);
     try {
-        await productSchema
-              .findOne({producto_id:producto_id})
-              .then((data) => {
-                  if (data) {
-                      res.json(data);
-                  } else {
-                      res.status(404).json({message: 'id no existe', producto_id: producto_id});
-                  }
-              })
-              .catch((error)=> res.json({message: error}));
+          const pid=req.params.producto_id;
+          if(pid==null || pid==undefined || pid==""){
+              res.status(500).json({ error: "El id es requerido" });
+          }
+          const producto_id = parserword(pid);
+          //console.log('check point get oneproduct parserword',producto_id);
+      
+          await productSchema
+                .findOne({producto_id:producto_id})
+                .then((data) => {
+                    if (data) {
+                        res.json(data);
+                    } else {
+                        res.status(404).json({message: 'id no existe', producto_id: producto_id});
+                    }
+                })
+                .catch((error)=> res.json({message: error}));
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
@@ -83,7 +88,6 @@ try {
     }
   }
 
-  
     const product_id_parseado= producto_id.toUpperCase().trim();
     const nombre_parseado = nombre.toUpperCase().trim();
     console.log("creando producto... antes del schema")

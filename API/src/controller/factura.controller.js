@@ -141,6 +141,22 @@ const createFactura = async (req, res) => {
     }
 }
 
+//funcion para eliminar factura
+const deleteFactura = async (req, res) => {
+    try {
+        const id = req.params.id;
+        if (id == null || id == undefined || id == "" || id == " ") {
+            return res.status(400).json({ message: 'Falta el id' })
+        };
+        await facturaSchema.findOneAndUpdate({ id: id }, { activo: false });    
+        
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: err.message });
+    }
+};
+
+//Función para valir que los datos no esten vacios
 function validacion(datos) {
     //validaciones de campos vacios o nulos 
     for (const propiedad in datos) {

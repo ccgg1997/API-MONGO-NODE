@@ -1,10 +1,12 @@
 const { request } = require('express');
 const movimientoSchema = require('../models/movimiento.schema');
+const inventarioSchema = require('../models/inventario.schema');
 const productoSchema = require('../models/product.schema');
 const jwt = require('jsonwebtoken');
 const config = require('../config');
 const mongoose = require('mongoose');
 const moment = require('moment-timezone');
+const {updateInventarioFunction} = require('./inventario.controller');
 
 
 // Función para obtener todos los movimientos
@@ -34,97 +36,72 @@ const getOneMovimiento = async (req, res) => {
 
 };
 
-//funcion para crear un movimiento
 const createMovimiento = async (req, res) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-  try {
-    const { cantidad,categoria } = req.body;
-    const tipo1= parserword(req.body.tipo);
-    //valdiacion
-    if(tipo1==null || cantidad==null || categoria==null){
-      return res.status(400).json({ message: 'Faltan datos' });
+  try{
+    const { cantidad, categoria, productoId, bodegaId, tipo, estilos } = mayuscula(req.body);
+
+    //validacion de datos
+    if(estaVacio([categoria,productoId, bodegaId,tipo])){
+      return res.status(400).json({ message: 'Faltan datos(categoria, productoId, bodegaId,tipo) o datos incorrectos '});
     }
-
-    const tipo = tipo1.toLowerCase() ;
-
-    //formato de datos
-    fecha = moment().tz('America/Bogota').format('YYYY-MM-DD HH:mm:ss');
-    const productoId = parserword(req.body.productoId);
-    const bodegaId = parserword(req.body.bodegaId);
-    
-
-    //extrayendo el usuario del token
+    if(isNaN(cantidad)|| typeof cantidad !=='number' || estilos===undefined || estilos.length==0){
+      console.log("cantidad: "+cantidad+" estilos: "+estilos);
+      return res.status(400).json({ message: 'La cantidad debe ser un numero y estilos no debe estar vacio' });
+    }
+    //existe inventario
+    const existeInventario = await inventarioSchema.findOne({inventarioId:bodegaId+"-"+productoId});
+        if(existeInventario==null){
+            return res.status(400).json({ error: {'No se hizo moviminiento ni se actualizo inventario. Inventario no existe': bodegaId+"-"+productoId}});
+        }
+    //sacar user del token
     const token = req.headers['x-access-token'];
     const decoded = jwt.verify(token, config.SECRET);
     const userId = decoded.idUser;
-    const name=decoded.name;
-    const usuario= userId+"-"+name;
-
-    //schema de movimiento
-    const newMovimiento = new movimientoSchema({ tipo, fecha, cantidad, productoId, bodegaId,usuario,categoria });
-    
-    // Buscar el producto y la bodega en la base de datos
-    const producto = await productoSchema.findOne({ producto_id: productoId });
-    if (!producto) {
-      throw new Error(`El producto ${productoId} no existe`);
+    const name = decoded.name;
+    const usuario = userId + "-" + name;
+    const datos = {cantidad, categoria, productoId, bodegaId, tipo, estilos, usuario};
+    //crear movimiento
+    const movimientosCreados= await createMovimientoFunction(datos,res);
+    if(!movimientosCreados){
+      return res.status(400).json({ message: 'No se pudo crear el movimiento' });
     }
-    const bodega = await producto.bodegas.find((b) => b.bodegaId === bodegaId);
-    console.log('bodega:', bodega, 'producto ', producto );
-    if (!bodega) {
-      throw new Error(`El id de la bodega ${bodegaId} no existe para el producto ${productoId}`);
-    }
-
-    //actualizar cantidad en producto
-    await productoSchema.findOneAndUpdate(
-      { producto_id: productoId, "bodegas.bodegaId": bodegaId },
-      { $inc: { "bodegas.$.cantidad": tipo === 'entrada' ? cantidad : -cantidad, cantidadTotal: tipo === 'entrada' ? cantidad : -cantidad } },
-      { session }
-    );
-    
-    //guardar movimiento
-    await newMovimiento.save({ session });
-    await session.commitTransaction();
-    res.json({ message: 'Movimiento creado' });
-
-  } catch (err) {
+    console.log("Movimiento creado y descuenta de inventario exitoso");
+    return res.status(200).json({ message: 'Movimiento creado' });
+  }catch(err){
     console.log(err);
-    await session.abortTransaction();
-    res.status(500).json({ error: "No se pudo crear el movimiento: " + err.message });
-  } finally {
-    session.endSession();
+    res.status(500).json({ error: err.message });
   }
 };
 
 //funcion para crear un movimiento entre bodegas (ejemplo: surtir bodega 3 con la cantidad de bodega 1)
 const createMovEntreBodegas = async (req, res) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
   try {
 
-    //traer datos de body
-    const {productoId, bodegaId1, bodegaId2, cantidad } = req.body;
+    //traer datos de body y parsearlos
+    const {productoId, bodegaId1, bodegaId2, cantidad,estilos } = mayuscula(req.body);
 
     //validacion de datos
-    if(productoId===undefined || bodegaId1===undefined || bodegaId2===undefined || cantidad===undefined){
-      console.log(productoId,bodegaId1,bodegaId2,cantidad);
-      throw new Error(`Faltan datos, revise el productoId, bodegaId1, bodegaId2 y cantidad`);
+    if(estaVacio([productoId, bodegaId1, bodegaId2])){
+      return res.status(400).json({ message: 'Faltan datos( productoId, bodegaId) o datos incorrectos '+productoId+"-"+bodegaId1+"-"+bodegaId2 });
     }
-
-    //formato de datos
-    const fecha = moment().tz('America/Bogota').format('YYYY-MM-DD HH:mm:ss');
-    const productoIdParseado = parserword(req.body.productoId);
-    const bodegaId1Parseado = parserword(req.body.bodegaId1);
-    const bodegaId2Parseado = parserword(req.body.bodegaId2);
-    
-    //validacion de datos
-    if(bodegaId1Parseado===bodegaId2Parseado){
+    if(isNaN(cantidad)|| typeof cantidad !=='number' || estilos===undefined || estilos.length==0){
+      console.log("cantidad: "+cantidad+" estilos: "+estilos);
+      return res.status(400).json({ message: 'La cantidad debe ser un numero y estilos no debe estar vacio'+cantidad });
+    }
+    if(bodegaId1===bodegaId2){
       throw new Error(`Las bodegas no pueden ser iguales`);
     }
     if(cantidad<=0){
       throw new Error(`La cantidad debe ser mayor a 0`);
     }
-   
+
+    //existe inventario
+    const existeInventario1 = await inventarioSchema.findOne({inventarioId:bodegaId1+"-"+productoId});
+    const existeInventario2 = await inventarioSchema.findOne({inventarioId:bodegaId2+"-"+productoId});
+    if(existeInventario1==null || existeInventario2==null){
+        return res.status(400).json({ error: {'No se hizo moviminiento ni se actualizo inventario. Inventario no existe': bodegaId1+"-"+productoId+ " o "+bodegaId2+"-"+productoId}});
+    }
+
     //extrayendo el usuario del token
     const token = req.headers['x-access-token'];
     const decoded = jwt.verify(token, config.SECRET);
@@ -132,110 +109,176 @@ const createMovEntreBodegas = async (req, res) => {
     const name=decoded.name;
     const usuario= userId+"-"+name;
 
-    //schema de movimiento de entrada
-    const newMovimiento1 = new movimientoSchema({ tipo: 'entrada', fecha, cantidad, productoId: productoIdParseado, bodegaId: bodegaId2Parseado,usuario,categoria:'surtidoEntreBodega' });
-
-    //schema de movimiento de salida
-    const newMovimiento2 = new movimientoSchema({ tipo: 'salida', fecha, cantidad, productoId: productoIdParseado, bodegaId: bodegaId1,usuario,categoria:'surtidoEntreBodega' });
-
-    // Buscar el producto 
-    const producto = await productoSchema.findOne({ producto_id: productoIdParseado });
-    if (!producto) {
-       throw new Error(`El producto ${productoIdParseado} no existe`);
+    
+    //crear movimiento1(entrada)
+    const datos1 = {cantidad:cantidad, categoria:"SURTIDOENTREBODEGA", productoId:productoId, bodegaId:bodegaId1, tipo:"ENTRADA", estilos:estilos, usuario:usuario};
+    console.log("datos1: "+JSON.stringify(datos1));
+    const movimientosCreados1= await createMovimientoFunction(datos1,res);
+    if(!movimientosCreados1){
+      return res.status(400).json({ message: 'No se pudo crear el movimiento de ingreso a la bodega'+ bodegaId1 });
     }
 
-    // Buscar que existan las bodegas en la base de datos
-    const bodegaSalida = await producto.bodegas.find((b) => b.bodegaId === bodegaId1Parseado);
-    console.log(bodegaId1Parseado,);
-    if (!bodegaSalida) {
-      throw new Error(`El id para la bodega de salida '${bodegaId1Parseado}' no existe para el producto ${productoIdParseado}`);
-    }
-    const bodegaentrada = await producto.bodegas.find((b) => b.bodegaId === bodegaId2Parseado);
-    if (!bodegaentrada) {
-      throw new Error(`El id para la bodega de entrada  '${bodegaId2Parseado}' no existe para el producto ${productoIdParseado}`);
+    //crear movimiento2(salida)
+    const datos2 = {cantidad:cantidad, categoria:"SURTIDOENTREBODEGA", productoId:productoId, bodegaId:bodegaId2, tipo:"SALIDA", estilos:estilos, usuario:usuario};
+    const movimientosCreados2= await createMovimientoFunction(datos2,res);
+    if(!movimientosCreados2){
+      return res.status(400).json({ message: 'No se pudo crear el movimiento de salida de la bodega '+ bodegaId2  }); 
     }
 
-    //validar que la cantidad a surtir no sea mayor a la cantidad de la bodega de salida
-    if (bodegaSalida.cantidad < cantidad) {
-      throw new Error(`La cantidad a surtir es mayor a la cantidad de la bodega de salida`);
-    }
-
-    //actualizar cantidad de bodega de salida (restar cantidad)
-    await productoSchema.findOneAndUpdate(
-      { producto_id: productoIdParseado, "bodegas.bodegaId": bodegaId1Parseado },
-      { $inc: { "bodegas.$.cantidad":-cantidad } },
-      { session }
-    );
-
-    //actualizar cantidad de bodega de entrada (sumar cantidad)
-    await productoSchema.findOneAndUpdate(
-      { producto_id: productoId, "bodegas.bodegaId": bodegaId2Parseado },
-      { $inc: { "bodegas.$.cantidad": cantidad } },
-      { session }
-    );
-
-    //crear movimiento de entrada
-    await newMovimiento1.save({ session });
-
-    //crear movimiento de salida
-    await newMovimiento2.save({ session });
-
-    //guardar movimiento  
-    await session.commitTransaction();
     res.json({ message: 'Movimiento creado' });
-
-
   }
   catch (err) {
-    await session.abortTransaction();
     res.status(500).json({ error: "No se pudo crear el movimiento: " + err.message });
-  } finally {
-    session.endSession();
-  }
+  } 
 
 };
 
 //funcion para elminar movimiento por id
 const deleteMovimiento = async (req, res) => {
   try {
+    console.log("entro a deleteMovimiento [001]")
     //verificar que el id no sea nulo
     const id =req.params.id;
     if(id==null || id==undefined || id=="" || id==" ") {
       return res.status(400).json({ message: 'Falta el id' } )
     };
+    console.log("valida id en deleteMovimiento [002]");
 
-    //formato de datos de fecha
-    const fecha = moment().tz('America/Bogota').format('YYYY-MM-DD HH:mm:ss');
-    const movimiento = await movimientoSchema.findOneAndUpdate({_id:id}, { $set:{activo: false,fechaEliminacion:fecha,categoria:'devolucion'}});
+    //sacar user del token
+    const token = req.headers['x-access-token'];
+    const decoded = jwt.verify(token, config.SECRET);
+    const userId = decoded.idUser;
+    const name = decoded.name;
+    const usuario = userId + "-" + name;
 
-    //actualiza la cantidad del producto con el movimiento eliminado(entrada o salida)
-    const tipo=movimiento.tipo;
-    const cantidad=movimiento.cantidad;
-    const bodegaId=movimiento.bodegaId;
-    const productoId=movimiento.productoId;
-    
-    if (!movimiento || !movimiento.activo ) return res.status(404).json({ message: 'Movimiento no encontrado o inactivo' });
-    console.log('check point movimiento:',cantidad, tipo, bodegaId, productoId);
-    console.log(movimiento);
-    
-    const productoModificado= await productoSchema.findOneAndUpdate(
-      { producto_id: productoId, "bodegas.bodegaId": bodegaId },
-      { $inc: { "bodegas.$.cantidad": tipo === 'salida' ? cantidad : -cantidad, cantidadTotal: tipo === 'salida' ? cantidad : -cantidad } });
-    console.log('producto-modificado: '+productoModificado);
-
-    res.json({ message: 'Movimiento eliminado' });
-    
+    //eliminar movimiento
+    const movEliminado = await deleteMovimientoFunction(id,usuario);
+    if(movEliminado===null || movEliminado===undefined || movEliminado==="" || movEliminado===" " || !movEliminado){
+      return res.status(400).json({ message: 'No se pudo eliminar el movimiento,revise que el _id sea valido y este activo' });
+    }
+    console.log("Movimiento eliminado exitosamente",movEliminado);
+    res.json({ message: 'Movimiento eliminado' });  
   } catch (err) {
     console.log(err); 
     res.status(500).json({ error: err.message });
   }
 };
 
-//funcion para parsear una palabra(quita espacios y pone en mayus todo)
-const parserword = (word) => {
-  return word.toUpperCase().trim();
+
+
+// ---------------------------------funciones auxiliares---------------------------------
+
+const estaVacio = (datos) => {
+  for (let i = 0; i < datos.length; i++) {
+      if (datos[i] == null || datos[i] == undefined || datos[i] == "" || datos[i] == " " || typeof datos[i] !== "string") {
+          return true;
+      }
+  }
+  return false;
+}
+
+//pasar a mayuscula los datos
+const mayuscula = (datos) => {
+  const datosMayusculas = {};
+  for (let key in datos) {
+    if (typeof datos[key] === 'string') {
+      datosMayusculas[key] = datos[key].toUpperCase();
+    } else {
+      datosMayusculas[key] = datos[key];
+    }
+  }
+  return datosMayusculas;
+}
+
+//funcion para crear movimiento
+const createMovimientoFunction = async(datos)=>{ 
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+
+    //parsear datos
+    const datosMayusculas = mayuscula(datos);
+    const {cantidad, categoria, productoId, bodegaId, tipo, estilos, usuario} = datosMayusculas;
+ 
+    //formato de datos para movimiento schema
+    const fecha = moment().tz('America/Bogota').format('YYYY-MM-DD HH:mm:ss');
+
+    //schema de movimiento
+    const newMovimiento = new movimientoSchema({ tipo, fecha, cantidad, productoId, bodegaId, usuario, categoria, estilos });
+
+    //actualizar inventario con base a los estilos del producto del movimiento actual
+    const entrada_o_salida_inventario = tipo == "ENTRADA" ? 1 : -1;
+    const mov_productos_inventario = await updateInventarioFunction(bodegaId, productoId, estilos, entrada_o_salida_inventario);
+    console.log("check point 2:",datosMayusculas,'mov_procustos_inventarios: ',mov_productos_inventario, 'dentro de la funcion createMovimientoFunction en movimientoControlador','estilo:',estilos,'bodegaid:',bodegaId,'productoId:',productoId);
+    if (!mov_productos_inventario) {
+      throw new Error('No se pudo actualizar inventario');
+    }
+    console.log('checpoint3 : despues de mov inventarios)', 'bodegaId ',bodegaId ) 
+    //guardar movimiento
+    await newMovimiento.save({ session });
+    console.log('checpoint4 : despues de mov inventarios. save) ')
+    await session.commitTransaction();
+    console.log('checpoint5 : despues de mov inventarios. commit) ')
+    return newMovimiento;
+
+  } catch (err) {
+    console.log(err);
+    await session.abortTransaction();
+    return false;
+  } finally {
+    session.endSession();
+  }
 };
 
+//funcion para eliminar movimiento (retorna el inventario a su estado anterior)
+const deleteMovimientoFunction = async (idMovimiento,usuario) => {  
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+        //formato de datos de fecha
+        const fechaEliminacion = moment().tz('America/Bogota').format('YYYY-MM-DD HH:mm:ss');
+
+        //buscando documento
+        const movimiento = await movimientoSchema.findById({_id:idMovimiento,activo:true });
+        if (movimiento === undefined ||!movimiento || !movimiento.activo ) {
+          return false;
+        }
+        console.log("check point 0 deletemovimiento:",movimiento);
+        
+        //sacando detalles de
+        const estilos = movimiento.estilos;
+        const cantidad = movimiento.cantidad;
+        const tipo = movimiento.tipo === "ENTRADA" ? "SALIDA" : "ENTRADA";
+        const bodegaId = movimiento.bodegaId;
+        const productoId = movimiento.productoId;
+        const categoria = "DEVOLUCION";
+        console.log("check point 1 functiondeleteMov:",estilos, cantidad, tipo, bodegaId, productoId, categoria);
+       
+        //modificar estado de movimiento
+        movimiento.activo = false;
+        movimiento.fechaEliminacion = fechaEliminacion;
+        await movimiento.save({ session });
+
+        //definir datos de movimiento
+        const datos = {cantidad, categoria, productoId, bodegaId, tipo, estilos, usuario};
+
+        //crear movimiento
+        const movimientosCreados= await createMovimientoFunction(datos);
+        if(!movimientosCreados){
+          return false;
+        } 
+
+        await session.commitTransaction();
+        return true;
+  }
+  catch (err) {
+    console.log(err);
+    await session.abortTransaction();
+    return false;
+  } finally {
+    session.endSession();
+  }
+};
 
 module.exports = {
 
