@@ -5,50 +5,54 @@ const detalleFacturaSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    productoId: {
-        type: String,
-        required: true,
-    },
     fecha: {
         type: Date,
         required: true,
-    },
-    cantidad: {
-        type: Number,
-        required: true,
-        min: 0
-    },
-    precio: {
-        type: Number,
-        required: true,
-        min: 0
     },
     activo: {
         type: Boolean,
         default: true
     },
-    fechaEliminacion: {
-        type: Date,
-        default: null
-    },
-    familia: {
-        type: String,
-        required: true,
-    },
-    detalle:[
-        {
-            motivo: {
-                type: String,
-                required: true,
-
-            },
-            cantidad: {
-                type: Number,
-                required: true,
-                min: 0
+    productos: [{
+        productoId: {
+            type: String,
+            required: true,
+        },
+        productoNombre: {
+            type: String,
+            required: true,
+        },
+        cantidad: {
+            type: Number,
+            required: true,
+            min: 0
+        },
+        precio: {
+            type: Number,
+            required: true,
+            min: 0
+        },
+        familia: {
+            type: String,
+            required: true,
+        },
+        estilos:[
+            {
+                nombre: {
+                    type: String,
+                    required: true,
+      
+                },
+                cantidad: {
+                    type: Number,
+                    required: true,
+                    min: 0
+                }
             }
-        }
-    ]
+        ] 
+        
+    }]
+
 
 });
 

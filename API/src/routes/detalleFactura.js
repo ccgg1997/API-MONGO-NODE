@@ -7,7 +7,7 @@ const router = Router();
  * @swagger
  * /api/detalleFactura:
  *   get:
- *     tags: [DetalleFactura]
+ *     tags: [FacturaDetalle]
  *     summary: Obtiene todos los detalles de factura
  *     description: Obtiene una lista de todos los detalles de factura registrados en el sistema.
  *     parameters:

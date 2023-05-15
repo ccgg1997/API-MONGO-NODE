@@ -114,13 +114,13 @@ router.get('/:id', [authJwt.verifyToken, authJwt.isAdmin], getOneFactura);
  *                       type: string
  *                       description: Familia del producto en la factura
  *                       example: FINA
- *                     detalle:
+ *                     estilos:
  *                       type: array
  *                       description: Detalle adicional del producto en la factura
  *                       items:
  *                         type: object
  *                         properties:
- *                           motivo:
+ *                           nombre:
  *                             type: string
  *                             description: Motivo del detalle
  *                             example: azul

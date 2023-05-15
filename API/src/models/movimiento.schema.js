@@ -56,7 +56,11 @@ const movimientoSchema = new mongoose.Schema({
               min: 0
           }
       }
-    ]
+    ],
+    factura: {
+      type: String,
+      required: false
+    }
 
   });
 

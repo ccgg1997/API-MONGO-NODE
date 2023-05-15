@@ -61,7 +61,7 @@ const createMovimiento = async (req, res) => {
     const usuario = userId + "-" + name;
     const datos = {cantidad, categoria, productoId, bodegaId, tipo, estilos, usuario};
     //crear movimiento
-    const movimientosCreados= await createMovimientoFunction(datos,res);
+    const movimientosCreados= await createMovimientoFunction(datos);
     if(!movimientosCreados){
       return res.status(400).json({ message: 'No se pudo crear el movimiento' });
     }
@@ -113,7 +113,7 @@ const createMovEntreBodegas = async (req, res) => {
     //crear movimiento1(entrada)
     const datos1 = {cantidad:cantidad, categoria:"SURTIDOENTREBODEGA", productoId:productoId, bodegaId:bodegaId1, tipo:"ENTRADA", estilos:estilos, usuario:usuario};
     console.log("datos1: "+JSON.stringify(datos1));
-    const movimientosCreados1= await createMovimientoFunction(datos1,res);
+    const movimientosCreados1= await createMovimientoFunction(datos1);
     if(!movimientosCreados1){
       return res.status(400).json({ message: 'No se pudo crear el movimiento de ingreso a la bodega'+ bodegaId1 });
     }
@@ -198,13 +198,23 @@ const createMovimientoFunction = async(datos)=>{
 
     //parsear datos
     const datosMayusculas = mayuscula(datos);
-    const {cantidad, categoria, productoId, bodegaId, tipo, estilos, usuario} = datosMayusculas;
+    const {cantidad, categoria, productoId, bodegaId, tipo, estilos, usuario,factura} = datosMayusculas;
+
+    let factura1 =" ";
+    //sacando factura
+    if(factura==null || factura==undefined || factura=="" || factura==" "){
+      factura1=""
+    }
+    else{
+      factura1=factura;
+    }
+    
  
     //formato de datos para movimiento schema
     const fecha = moment().tz('America/Bogota').format('YYYY-MM-DD HH:mm:ss');
 
     //schema de movimiento
-    const newMovimiento = new movimientoSchema({ tipo, fecha, cantidad, productoId, bodegaId, usuario, categoria, estilos });
+    const newMovimiento = new movimientoSchema({ tipo, fecha, cantidad, productoId, bodegaId, usuario, categoria, estilos, factura:factura1 });
 
     //actualizar inventario con base a los estilos del producto del movimiento actual
     const entrada_o_salida_inventario = tipo == "ENTRADA" ? 1 : -1;
@@ -282,6 +292,6 @@ const deleteMovimientoFunction = async (idMovimiento,usuario) => {
 
 module.exports = {
 
-  getMovimiento, getOneMovimiento,createMovimiento,deleteMovimiento,createMovEntreBodegas
+  getMovimiento, getOneMovimiento,createMovimiento,deleteMovimiento,createMovEntreBodegas,createMovimientoFunction
  
 };
