@@ -48,7 +48,7 @@ facturaSchema.methods.incrementar = async function() {
   const ultimo = await this.constructor.findOne({}).sort('-inc_field').exec();
   const ultimoValor = ultimo ? ultimo.inc_field : 0;
   this.inc_field = ultimoValor + 1;
-  this.id = this.inc_field.toString(16).padStart(8, '0');
+  this.id = this.inc_field.toString(16).padStart(8, '0').toUpperCase();
 };
 
 facturaSchema.pre('save', async function (next) {

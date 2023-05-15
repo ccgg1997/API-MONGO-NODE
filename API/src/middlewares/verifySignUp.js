@@ -9,6 +9,7 @@ const userSchema = require('../models/user.schema');
  * @returns 
  */
 const checkRolesExisted = (req, res, next) => {
+  try{
     if (req.body.roles) {
         for (let i = 0; i < req.body.roles.length; i++) {
             if (!ROLES.includes(req.body.roles[i])) {
@@ -20,6 +21,10 @@ const checkRolesExisted = (req, res, next) => {
     }
 
     next();
+  }catch(error){
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 }
 
 /**

@@ -279,6 +279,7 @@ const deleteMovimientoFunction = async (idMovimiento,usuario) => {
         } 
 
         await session.commitTransaction();
+        session.endSession();
         return true;
   }
   catch (err) {
@@ -292,6 +293,6 @@ const deleteMovimientoFunction = async (idMovimiento,usuario) => {
 
 module.exports = {
 
-  getMovimiento, getOneMovimiento,createMovimiento,deleteMovimiento,createMovEntreBodegas,createMovimientoFunction
+  getMovimiento, getOneMovimiento,createMovimiento,deleteMovimiento,createMovEntreBodegas,createMovimientoFunction,deleteMovimientoFunction
  
 };

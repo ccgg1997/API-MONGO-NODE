@@ -16,7 +16,7 @@ const createRoles = async () => {
   
   console.log("info" + value);
 }catch(error){
-  console.log(error);
+  console.log("error de conexion, en el archivo InitialSetUp: " + error);
 }
 
 

@@ -138,8 +138,8 @@ router.get('/:id', [authJwt.verifyToken, authJwt.isAdmin], getOneFactura);
  *                   cantidad: 2
  *                   precio: 5000.00
  *                   familia: FINA
- *                   detalle: 
- *                     - motivo: azul
+ *                   estilos: 
+ *                     - nombre: azul
  *                       cantidad: 15
  *     responses:
  *       '201':
@@ -177,6 +177,36 @@ router.get('/:id', [authJwt.verifyToken, authJwt.isAdmin], getOneFactura);
 */
 router.post('/', [authJwt.verifyToken, authJwt.isAdmin], createFactura);
 
-// router.delete('/:id', [authJwt.verifyToken, authJwt.isAdmin], deleteFactura);
+/**
+ * @swagger
+ * /api/factura/{id}:
+ *   delete:
+ *     summary: Elimina una factura por su ID
+ *     tags: [Factura]
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         description: Token de autenticación JWT.
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID de la factura a eliminar
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Factura eliminada exitosamente
+ *         schema:
+ *           type: object
+ *           properties:
+ *             message:
+ *               type: string
+ *               description: Mensaje de confirmación
+ *       404:
+ *         description: No se encontró la factura con el ID especificado
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.delete('/:id', [authJwt.verifyToken, authJwt.isAdmin], deleteFactura);
 
 module.exports = router;  

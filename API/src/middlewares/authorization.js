@@ -56,6 +56,7 @@ const isModerator = async (req, res, next) => {
  * @param {*} next 
  */
 const isAdmin = async (req, res, next) => {
+    try{
     //obtener el token del header y sacar el rol del usuario
     const token = req.headers['x-access-token'];
     if (!token) return res.status(403).send({ message: 'No token provided!' });
@@ -75,6 +76,10 @@ const isAdmin = async (req, res, next) => {
         }
     }
      return res.status(403).json({message:"Require admin Role!"})
+    }catch(error){
+        console.error(error);
+        res.status(500).json({ message: "Internal server error isAdmin" });
+    }
  
 };
 

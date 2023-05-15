@@ -3,7 +3,7 @@ const movimientoSchema = require('../models/movimiento.schema');
 const facturaSchema = require('../models/factura.schema');
 const detalleSchema = require('../models/detalleFactura.schema');
 const negocioSchema = require('../models/negocio.schema');
-const {createMovimientoFunction} = require('./movimiento.controller');
+const {createMovimientoFunction, deleteMovimientoFunction} = require('./movimiento.controller');
 const productoSchema = require('../models/product.schema');
 const moment = require('moment-timezone');
 const jwt = require('jsonwebtoken');
@@ -53,7 +53,7 @@ const createFactura = async (req, res) => {
         //sacando ultima factura y pasando el serial a hexadecimal para la proxima factura
         const ultimaFactura = await facturaSchema.findOne().sort({ _id: -1 }).limit(1);
         const proximaFactura = ultimaFactura ? ultimaFactura.inc_field + 1 : 1;
-        const hexa = proximaFactura.toString(16);
+        const hexa =( proximaFactura.toString(16).padStart(8, '0')).toUpperCase();
 
         //validar datos
         if(isEmpty( [negocioId, total,productos, facturaId])){
@@ -74,9 +74,15 @@ const createFactura = async (req, res) => {
             //isEmpty de que no este vacio el producto id
             if(isEmpty([productos[i].productoId])){
             return res.status(400).json({ message: 'datos incompletos en producto' })}
+            
+            //pasar minusculas a mayusculas
+            const productIdMayu= productos[i].productoId.toUpperCase();
+            const familiaMayu= productos[i].familia.toUpperCase();
+
             // verificacion que producto id existe en la base de datos
-            const productoExiste= await productoSchema.findOne({ producto_id: productos[i].productoId});
-            if (isEmpty([productoExiste])) {
+            const productoExiste= await productoSchema.findOne({ producto_id: productIdMayu});
+            if (productoExiste== null || productoExiste== undefined) {
+                console.log("check piont1 de productos: checkeando productos",productIdMayu, productos[i].cantidad, familiaMayu);
                 return res.status(400).json({ message: 'Producto no existe, ingrese producto valido para la factura' })
             }
             //isEmpty de cantidad del producto no sea menor a 0
@@ -138,9 +144,11 @@ const createFactura = async (req, res) => {
         //guardar movimiento  
         await session.commitTransaction();
         res.status(201).json({ message: 'Factura creada1' });
+        session.endSession();
     } catch (err) {
         await session.abortTransaction();
         if (err.code === 11000) {
+            console.log("error: ", err);
             return res.status(400).json({ error: 'Factura ya existe' });
         }
         console.log("error: ", err);
@@ -153,11 +161,40 @@ const createFactura = async (req, res) => {
 //funcion para eliminar factura
 const deleteFactura = async (req, res) => {
     try {
-        const id = req.params.id;
+        const id = (req.params.id).toUpperCase();
         if (id == null || id == undefined || id == "" || id == " ") {
             return res.status(400).json({ message: 'Falta el id' })
         };
-        await facturaSchema.findOneAndUpdate({ id: id }, { activo: false });    
+
+        //extrayendo el usuario del token
+        const fecha = new Date(moment().tz('America/Bogota').format('YYYY-MM-DD HH:mm:ss'));
+        const token = req.headers['x-access-token'];
+        const decoded = jwt.verify(token, config.SECRET);
+        const userId = decoded.idUser;
+        const name=decoded.name;
+        const usuario= userId+"-"+name;
+
+
+        const movEliminar= await movimientoSchema.find({ factura: id, activo: true },{id}); 
+        if(movEliminar===undefined || movEliminar===null){
+            res.status(400).json({error:'el id de factura ingresado no existe'})
+        }
+
+        for(let i=0; i<movEliminar.length;i++){
+            await deleteMovimientoFunction(movEliminar[i].id, usuario);
+            console.log("ids de movimiento a eliminar: ", movEliminar[i].id);
+            
+        }
+
+        const facturaEliminar= await facturaSchema.findOneAndUpdate({ id: id, activo: true }, { activo: false, fechaEliminacion: fecha }, { new: true });
+        if(facturaEliminar===undefined || facturaEliminar===null){
+            res.status(400).json({error:'el id de factura ingresado no existe'})
+        }
+
+
+
+        console.log("id factura a eliminar despues del for: ", id);
+        res.json(movEliminar); 
         
     } catch (err) {
         console.log(err);
@@ -191,4 +228,4 @@ const mayuscula = (datos) => {
     return datosMayusculas;
   }
 
-module.exports = { getFactura,getOneFactura,createFactura };
+module.exports = { getFactura,getOneFactura,createFactura,deleteFactura };
