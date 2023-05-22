@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const config = require('../config');
 const {Role} = require('../models/roles.schema');
 
+
 const signUp = async (req,res)=>{
     try{
         createUser(req,res);
@@ -18,21 +19,26 @@ const signUp = async (req,res)=>{
 const signIn = async (req,res)=>{
 
     try{
-         
+        //validaciones de datos 
         const userFound = await userSchema.findOne({id:req.body.id});
         if(userFound===null || userFound===undefined) return res.status(400).json({message:"user not found",token:null});
-        const role = userFound.roles;
-        console.log("userFound" + userFound)
+        const role = userFound.roles[0];
         if(!userFound || !userFound.access) return res.status(400).json({message:"user not found or access denied",token:null});
         const CorrectPassword = await userSchema.comparePassword( req.body.password, userFound.password);
-        if(!CorrectPassword) return res.status(400).json({token:null,message:"invalid password or user not found"});
+        if(!CorrectPassword) {
+            return res.status(400).json({token:null,message:"invalid password or user not found"})};
+
         // const dateToCompare = new Date("2023-05-06");
         // const currentDate = new Date();
         // let time =currentDate.toDateString() === dateToCompare.toDateString() ? '60000000s' : '600s';
-        const time = '600s';
+        const time = '3600s';
+        
+        //generar token
         const token = jwt.sign({ id: userFound._id, idUser: userFound.id, name: userFound.name, roles: role },config.SECRET,{expiresIn:time});
-        console.log("userFound" + userFound + "-TIME: "+ time);
-        res.json({token:token});
+        const decoded = jwt.verify(token, config.SECRET);
+        const expTimestamp = decoded.exp; // Obtiene el timestamp de expiración
+        const exp_data = new Date(expTimestamp * 1000);
+        res.json({token:token,idUser: userFound.id, name: userFound.name, roles: role,time_Exp:exp_data});
         
     }catch(error){
         console.error(error);
