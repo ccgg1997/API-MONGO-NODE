@@ -35,25 +35,6 @@ const productSchema = mongoose.Schema({
   activo: {
     type: Boolean,
     default: true,
-  },
-  bodegas:[{
-    
-    bodegaId: {
-      type: String,
-      required: true,
-    },
-    nombreBodega: {
-      type: String,
-  
-    },
-    cantidad: {
-      type: Number,
-      min: 0
-    }
-  }], 
-  cantidadTotal: {
-    type: Number,
-    min: 0
   }
 });
 

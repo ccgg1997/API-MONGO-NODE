@@ -13,13 +13,19 @@ const {Role} = require('../models/roles.schema');
 const verifyToken = async (req, res, next) => {
     try {
     const token = req.headers['x-access-token'];
+    console.log("status verifytoken [100]");
     if (!token) return res.status(403).send({ message: 'No token provided!' });
+    console.log("status verifytoken [101]", token);
     const decoded = jwt.verify(token, config.SECRET);
+    console.log("status verifytoken [102]");
     req.userId = decoded.id;
+    console.log("status verifytoken [103]");
     const user = await userSchema.findById(req.userId, { password: 0 });
+    console.log("status verifytoken [104]");
     if(!user) return res.status(404).send({ message: 'No user found!' });
     next();
     } catch (error) {
+        console.error(error);
         return res.status(401).send({ message: 'Unauthorized!. Please sigIn' });
     }
 };

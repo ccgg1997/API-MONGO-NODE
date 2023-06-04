@@ -8,7 +8,7 @@ const options = {
       title:"API BOLSAS ROMY", version:"1.0.0"},
 
     },
-    apis:["src/routes/user.js","src/database.js","src/routes/product.js","src/routes/bodega.js","src/routes/negocio.js","src/routes/movimiento.js","src/routes/factura.js","src/routes/detalleFactura.js","src/routes/familia.js","src/routes/inventario.js"]
+    apis:["src/routes/user.js","src/database.js","src/routes/product.js","src/routes/bodega.js","src/routes/negocio.js","src/routes/movimiento.js","src/routes/factura.js","src/routes/detalleFactura.js","src/routes/familia.js","src/routes/inventario.js", "src/routes/listaprecios.js"]
   };
   
   //docs in json format
@@ -22,7 +22,7 @@ const options = {
       res.send(swaggerSpec);
     });
 
-    console.log(`Swagger docs available at http://localhost:5000`)
+    console.log(`Swagger docs available at port 6000 in docker, but is available at http://localhost:5000`)
   };
 
   module.exports = {swaggerDocs};

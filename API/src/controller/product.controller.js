@@ -1,7 +1,6 @@
 const { request } = require('express');
 const productSchema = require('../models/product.schema');
 const negocioSchema = require('../models/negocio.schema');
-const jwt = require('jsonwebtoken');
 const bodegaSchema = require('../models/bodega.schema');
 
 //get all Products
@@ -47,36 +46,36 @@ const createProduct = async (req, res) => {
 try {
   //obteniendo variables del body
   const { producto_id, precio_regular, precio_especial, familia_id,
-    nombre, bodegas } = req.body;
+    nombre } = req.body;
   const activo = true;
   let cantidadTotal = 0;
   
   //validando que se ingresen todos los datos
-  if(producto_id==null || precio_regular==null || familia_id==null || nombre==null  || bodegas==null ){
+  if(producto_id==null || precio_regular==null || familia_id==null || nombre==null  ){
     return res.status(400).json({ message: "no se ingresaron datos" });
   }
 
-  //validando que no se ingrese un nombre de bodega que no existe (arreglo de bodegas)
-  if( bodegas !=undefined && bodegas.length > 0){
-    for (let i = 0; i < bodegas.length; i++) {
-      if(bodegas[i].nombreBodega===null || bodegas[i].bodegaId===null){
-        return res.status(400).json({ message: "no se ingresaron datos de bodegas" });
-      }
-      const nombreBodegaParseado = bodegas[i].nombreBodega.toUpperCase().trim();
-      bodegas[i] = {
-        ...bodegas[i],
-        nombreBodega: nombreBodegaParseado
-      }
-      const bodegaExistente = await bodegaSchema.findOne({ bodegaNombre: nombreBodegaParseado });
-      if (bodegaExistente === null || bodegaExistente === undefined) {
-        return res.status(400).json({ message: `La bodega ${bodegas[i].nombreBodega} no existe en la empresa.` });
-      }
-      cantidadTotal = cantidadTotal + bodegas[i].cantidad;
-    }
-  }
+  // //validando que no se ingrese un nombre de bodega que no existe (arreglo de bodegas)
+  // if( bodegas !=undefined && bodegas.length > 0){
+  //   for (let i = 0; i < bodegas.length; i++) {
+  //     if(bodegas[i].nombreBodega===null || bodegas[i].bodegaId===null){
+  //       return res.status(400).json({ message: "no se ingresaron datos de bodegas" });
+  //     }
+  //     const nombreBodegaParseado = bodegas[i].nombreBodega.toUpperCase().trim();
+  //     bodegas[i] = {
+  //       ...bodegas[i],
+  //       nombreBodega: nombreBodegaParseado
+  //     }
+  //     const bodegaExistente = await bodegaSchema.findOne({ bodegaNombre: nombreBodegaParseado });
+  //     if (bodegaExistente === null || bodegaExistente === undefined) {
+  //       return res.status(400).json({ message: `La bodega ${bodegas[i].nombreBodega} no existe en la empresa.` });
+  //     }
+  //     cantidadTotal = cantidadTotal + bodegas[i].cantidad;
+  //   }
+  // }
 
   //validando que no se ingrese un precio especial sin cliente o con un cliente que no existe (arreglo de precios especiales)
-  if(precio_especial !=undefined){
+  if(precio_especial !=undefined && precio_especial.length > 0){
     for (let i = 0; i < precio_especial.length; i++) {
       if(!precio_especial[i].cliente_id){
         return res.status(400).json({ message: "no se ingresaron datos de clientes" });
@@ -98,7 +97,6 @@ try {
       familia_id,
       activo,
       nombre: nombre_parseado,
-      bodegas,
       cantidadTotal
     });
     

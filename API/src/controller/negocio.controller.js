@@ -33,7 +33,7 @@ const createNegocio = async (req, res) => {
 //obtener todos los negocios
 const getNegocio = async (req, res) => {
   try {
-    const negocio = await Negocio.find({active:true});
+    const negocio = await Negocio.find({active:true}, { active: 0, __v: 0, _id:0 } );
     res.json(negocio);
   } catch (error) {
     res.json({ message: error });

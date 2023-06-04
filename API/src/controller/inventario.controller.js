@@ -8,7 +8,8 @@ const moment = require('moment-timezone');
 // obtener todos los inventarios
 const getInventario = async (req, res) => {
     try {
-        const inventario = await inventarioSchema.find({});
+        const inventario = await inventarioSchema.find({}, { active: 0, __v: 0
+            , _id:0 , 'estilos._id':0, activo:0 } );
         res.json(inventario);
     
     } catch (err) {

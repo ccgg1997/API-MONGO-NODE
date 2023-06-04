@@ -79,7 +79,7 @@ const router=Router();
  *           type: number
  *           example: 50
  */
-router.get('/',[authJwt.verifyToken], getProduct);
+router.get('/', getProduct);
 
 /**
  * @swagger
@@ -221,20 +221,6 @@ router.get('/:producto_id',[authJwt.verifyToken],getOneProduct);
  *               activo:
  *                 type: boolean
  *                 example: true
- *               bodegas:
- *                 type: array
- *                 items:
- *                   type: object
- *                   properties:
- *                     nombreBodega:
- *                       type: string
- *                       example: 'Bodega 1'
- *                     bodegaId:
- *                       type: string
- *                       example: 'e013' 
- *                     cantidad:
- *                       type: number
- *                       example: 10
  *     responses:
  *       '200':
  *         description: Objeto con el producto creado.
