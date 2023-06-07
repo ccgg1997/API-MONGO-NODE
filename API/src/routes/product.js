@@ -1,5 +1,5 @@
 const {Router}=require('express');
-const { getProduct, createProduct,deleteProduct,getOneProduct,updateProduct,updateProductBodega,updatePrecioProducto } = require('../controller/product.controller');
+const { getProduct, createProduct,deleteProduct,getOneProduct,updateProduct,updateProductBodega,updatePrecioProducto,updatePrecioProductoTodos } = require('../controller/product.controller');
 const {authJwt}=require('../middlewares');
 const router=Router();
 
@@ -520,5 +520,55 @@ router.put('/productBodega/:producto_id',[authJwt.verifyToken],updateProductBode
  *                   type: string
  */
 router.put('/precioEspecialProd/:producto_id',[authJwt.verifyToken],updatePrecioProducto);
+
+/**
+ * @swagger
+ * /api/products/updateAllPriceProductos/{producto_id}:
+ *   put:
+ *     summary: Actualizar el precio regular y precios especiales de un producto
+ *     tags:
+ *       - Products
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *       - in: path
+ *         name: producto_id
+ *         description: ID del producto a modificar
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               precio:
+ *                 type: number
+ *                 minimum: 0
+ *     responses:
+ *       200:
+ *         description: Precio actualizado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 producto:
+ *                   $ref: '#/components/schemas/Product'
+ *       400:
+ *         description: No se pudo actualizar el precio del producto
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
+router.put('/updateAllPriceProductos/:producto_id',[authJwt.verifyToken],updatePrecioProductoTodos);
 
 module.exports = router;

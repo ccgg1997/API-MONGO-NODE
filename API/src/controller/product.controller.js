@@ -265,38 +265,86 @@ const updateProductBodega = async (req, res) => {
   }
   };
 
+  //funcion para actualizar el precio de un producto para un cliente
   const updatePrecioProducto = async (req, res) => {
-  try {
-    const { producto_id } = req.params;
-    const { cliente_id, precio } = req.body;
-    const producto = await productSchema.findOne({ producto_id: producto_id });
-    console.log("checkpoint 1",producto);
-    if (!producto) {
-      throw new Error(`El producto ${producto_id} no existe`);
+    try {
+      const { producto_id } = req.params;
+      const { cliente_id, precio } = req.body;
+      const producto = await productSchema.findOne({ producto_id: producto_id });
+      console.log("checkpoint 1",producto);
+      if (!producto) {
+        throw new Error(`El producto ${producto_id} no existe`);
+      }
+  
+      const isInPrecioEspecial = await productSchema.findOne({ producto_id: producto_id, "precio_especial.cliente_id": cliente_id });
+  
+      if (!isInPrecioEspecial) {
+        // Agregar el cliente y el precio especial
+        await productSchema.findOneAndUpdate(
+          { producto_id: producto_id },
+          {
+            $push: {
+              precio_especial: {
+                cliente_id: cliente_id,
+                precio: precio
+              }
+            }
+          }
+        );
+        res.json({ message: 'Cliente y precio especial agregados' });
+      } else {
+        await productSchema.findOneAndUpdate(
+          { producto_id: producto_id, "precio_especial.cliente_id": cliente_id },
+          {
+            $set: {
+              "precio_especial.$.precio": precio
+            }
+          }
+        );
+        res.json({ message: 'Precio actualizado' });
+      }
+    } catch (error) {
+      res.status(400).json({ message: error.message });
     }
+  };
 
-    const isInPrecioEspecial = await productSchema.findOne({ producto_id: producto_id, "precio_especial.cliente_id": cliente_id });
-    if (!isInPrecioEspecial) {
-      throw new Error(`El cliente ${cliente_id} no tiene precios especiales de ${producto_id}`);
+  //funcion para actualizar el precio de un producto y actualizar el precio especial de todos los clientes
+  const updatePrecioProductoTodos = async (req, res) => {
+    try {
+      const { producto_id } = req.params;
+      const { precio } = req.body;
+  
+      const producto = await productSchema.findOne({ producto_id: producto_id });
+      console.log("checkpoint 1", producto);
+  
+      if (!producto) {
+        throw new Error(`El producto ${producto_id} no existe`);
+      }
+  
+      const diferencia = precio - producto.precio_regular;
+      producto.precio_regular = precio;
+  
+      producto.precio_especial = producto.precio_especial.map((precio_especial) => {
+        return {
+          ...precio_especial,
+          precio: precio_especial.precio + diferencia,
+        };
+      });
+  
+      await producto.save();
+  
+      res.status(200).json({ message: "Precio general y especiales del producto " + producto_id+" actualizados con éxito", producto });
+    } catch (error) {
+      res.status(400).json({ message: error.message });
     }
+  };
+  
 
-    await productSchema.findOneAndUpdate(
-      { producto_id: producto_id, "precio_especial.cliente_id": cliente_id},
-      {
-        $set: {
-          "precio_especial.$.precio": precio,
-        },
-      },
-    );
-    res.json({ message: 'precio actualizado' });
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
+  
 
 //funcion para parsear una palabra(quita espacios y pone en mayus todo)
 const parserword = (word) => {
   return word.toUpperCase().trim();
 };
   
-module.exports = {getProduct,createProduct,deleteProduct,getOneProduct,updateProduct,updateProductBodega,updatePrecioProducto};
+module.exports = {getProduct,createProduct,deleteProduct,getOneProduct,updateProduct,updateProductBodega,updatePrecioProducto,updatePrecioProductoTodos};
