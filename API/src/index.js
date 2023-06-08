@@ -37,6 +37,7 @@ app.use('/api/familia', require('./routes/familia'));
 app.use('/api/detalleFactura', require('./routes/detalleFactura'));
 app.use('/api/inventario', require('./routes/inventario'));
 app.use('/api/listaprecios', require('./routes/listaprecios'));
+app.use('/api/persona', require('./routes/persona'));
 
 //swagger docs
 swaggerDocs(app,port);

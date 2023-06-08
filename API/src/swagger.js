@@ -8,7 +8,7 @@ const options = {
       title:"API BOLSAS ROMY", version:"1.0.0"},
 
     },
-    apis:["src/routes/user.js","src/database.js","src/routes/product.js","src/routes/bodega.js","src/routes/negocio.js","src/routes/movimiento.js","src/routes/factura.js","src/routes/detalleFactura.js","src/routes/familia.js","src/routes/inventario.js", "src/routes/listaprecios.js"]
+    apis:["src/routes/user.js","src/database.js","src/routes/product.js","src/routes/bodega.js","src/routes/negocio.js","src/routes/movimiento.js","src/routes/factura.js","src/routes/detalleFactura.js","src/routes/familia.js","src/routes/inventario.js", "src/routes/listaprecios.js", "src/routes/persona.js"]
   };
   
   //docs in json format
