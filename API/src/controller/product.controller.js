@@ -46,13 +46,13 @@ const createProduct = async (req, res) => {
 try {
   //obteniendo variables del body
   const { producto_id, precio_regular, precio_especial, familia_id,
-    nombre } = req.body;
+    nombre,tipo } = req.body;
   const activo = true;
   let cantidadTotal = 0;
   
   //validando que se ingresen todos los datos
   if(producto_id==null || precio_regular==null || familia_id==null || nombre==null  ){
-    return res.status(400).json({ message: "no se ingresaron datos" });
+    return res.status(400).json({ message: "no se ingresaron datos",datos: req.body });
   }
 
   // //validando que no se ingrese un nombre de bodega que no existe (arreglo de bodegas)
@@ -97,7 +97,8 @@ try {
       familia_id,
       activo,
       nombre: nombre_parseado,
-      cantidadTotal
+      cantidadTotal,
+      tipo
     });
     
     await product.save();
@@ -135,10 +136,10 @@ const deleteProduct = (req, res) => {
 const updateProduct = async (req, res) => {
   try {
     const producto_id=parserword(req.params.producto_id);
-    const { nombre, precio_regular, precio_especial, familia_id,bodegas,cantidadTotal } = req.body;
+    const { nombre, precio_regular, precio_especial, familia_id } = req.body;
 
     // Validar que al menos uno de los parámetros está presente
-    if (!nombre && !precio_regular && !precio_especial && !familia_id && !cantidadTotal && !bodegas) {
+    if (!nombre && !precio_regular && !precio_especial && !familia_id ) {
       return res.status(400).json({ message: 'Al menos un parámetro debe ser enviado.' });
     }
 
@@ -148,23 +149,6 @@ const updateProduct = async (req, res) => {
       throw new Error(`El producto ${producto_id} no existe`);
     }
 
-    //validando que no se ingrese un nombre de bodega que no existe
-    if( bodegas !=undefined && bodegas.length > 0){
-      for (let i = 0; i < bodegas.length; i++) {
-        if(!bodegas[i].nombreBodega){
-          return res.status(400).json({ message: "no se ingresaron datos de bodegas" });
-        }
-        const nombreBodegaParseado = bodegas[i].nombreBodega.toUpperCase().trim();
-        bodegas[i] = {
-          ...bodegas[i],
-          nombreBodega: nombreBodegaParseado
-        }
-        const bodegaExistente = await bodegaSchema.findOne({ bodegaNombre: nombreBodegaParseado });
-        if (bodegaExistente === null || bodegaExistente === undefined) {
-          return res.status(400).json({ message: `La bodega ${bodegas[i].nombreBodega} no existe en la empresa.` });
-        }
-      }
-    }
 
     //validando que no se ingrese un precio especial sin cliente o con un cliente que no existe
     if(precio_especial !=undefined){
@@ -187,8 +171,7 @@ const updateProduct = async (req, res) => {
           nombre,
           precio_regular,
           precio_especial,
-          familia_id,
-          bodegas
+          familia_id
         },
       },
       { new: true } // Devolver el producto actualizado en lugar del original
@@ -203,67 +186,7 @@ const updateProduct = async (req, res) => {
   }
 };
 
-//funcion para actualizar la cantidad de un producto en una bodega
-const updateProductBodega = async (req, res) => {
-  try {
-    //tomar variables del body y params
-    const { producto_id } = req.params;
-    const { bodega,cantidad } = req.body;
 
-    //validar que se ingresen todos los datos
-    if(bodega===undefined || producto_id===null || cantidad===""){
-      throw new Error("No se ingresó informacion completa");
-    }
-
-    //parsear nombre bodega
-    const nombreBodegaParseado = bodega.toUpperCase().trim();
-
-    //evaluar que exista el producto
-    const producto_idParseado = producto_id.toUpperCase().trim();
-    const producto = await productSchema.findOne({ producto_id: producto_idParseado});
-    if (!producto) {
-      throw new Error(`El producto ${producto_id} no existe`);
-    }
-    console.log("check point 1",producto_idParseado,bodega, cantidad,producto);
-    
-
-    //evaluar que exista la bodega
-    const isInBodega = await bodegaSchema.findOne({ bodegaNombre: nombreBodegaParseado});
-    if (isInBodega===null || isInBodega===undefined) {
-      throw new Error(`La bodega ${bodega} no existe para el producto ${producto_id}`);
-    }
-    console.log("check point 2",producto_idParseado,nombreBodegaParseado, isInBodega);
-    
-    //cantidad vieja bodega
-    const cantidadBodegaEA01 = producto.bodegas.reduce((total, bodega) => {
-      return bodega.bodegaId === 'EA01' ? total + bodega.cantidad : total;
-    }, 0);
-    const cantidadBodegaVieja = cantidadBodegaEA01;
-    console.log("check point 2.1 bodega vieja",cantidadBodegaVieja, 'cantidad total vieja', producto.cantidadTotal);
-
-    //cantidad total nueva
-    const cantidadTotalNueva= (producto.cantidadTotal - cantidadBodegaVieja) + cantidad;
-
-    //hacer cambios en la bodega
-    const productoActualizado=await productSchema.findOneAndUpdate(
-      { producto_id: producto_idParseado, "bodegas.nombreBodega": nombreBodegaParseado},
-      {
-        $set: {
-          "bodegas.$.cantidad": cantidad, "cantidadTotal": cantidadTotalNueva
-        },
-      },
-    );
-
-    if(!productoActualizado){
-      throw new Error(`El producto ${producto_id} se pudo actualizar en la bodega ${bodega}`);
-    }
-    console.log("check point 3",productoActualizado);
-    res.json({ message: 'Bodega actualizada' });
-
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-  };
 
   //funcion para actualizar el precio de un producto para un cliente
   const updatePrecioProducto = async (req, res) => {
@@ -347,4 +270,4 @@ const parserword = (word) => {
   return word.toUpperCase().trim();
 };
   
-module.exports = {getProduct,createProduct,deleteProduct,getOneProduct,updateProduct,updateProductBodega,updatePrecioProducto,updatePrecioProductoTodos};
+module.exports = {getProduct,createProduct,deleteProduct,getOneProduct,updateProduct,updatePrecioProducto,updatePrecioProductoTodos};

@@ -6,6 +6,11 @@ const inventarioSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
+    nombreProducto:{
+        type: String,
+        required: true,
+    }
+    ,
     bodegaId: {
         type: String,
         required: true,
@@ -21,7 +26,6 @@ const inventarioSchema = new mongoose.Schema({
     cantidad: {
         type: Number,
         required: true,
-        min: 0
     },
     activo: {
         type: Boolean,
@@ -45,7 +49,6 @@ const inventarioSchema = new mongoose.Schema({
             cantidad: {
                 type: Number,
                 required: true,
-                min: 0
             }
         }
     ]

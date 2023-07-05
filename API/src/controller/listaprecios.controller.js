@@ -6,7 +6,7 @@ const productSchema = require('../models/product.schema');
 const getListaPrecios = (req, res) => {
   try
   {productSchema
-  .find({ activo: true })
+  .find({ activo: true, tipo: 'PRODUCTO' })
   .select('producto_id nombre precio_regular -_id')
   .then((data) => {
     const modifiedData = data.map((product) => {
@@ -27,7 +27,7 @@ const getListaPreciosIdCliente = (req, res) => {
   try {
     const clienteId = req.params.cliente_id; // Obtener el ID de los parámetros de la solicitud
 
-    productSchema.find({ activo: true })
+    productSchema.find({ activo: true, tipo: 'PRODUCTO' })
       .select('producto_id nombre precio_regular precio_especial')
       .then((products) => {
         // Mapear los productos y ajustar los precios según la lógica requerida

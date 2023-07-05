@@ -269,19 +269,6 @@ router.get('/:producto_id',[authJwt.verifyToken],getOneProduct);
  *         activo:
  *           type: boolean
  *           example: true
- *         bodegas:
- *           type: array
- *           items:
- *             type: object
- *             properties:
- *               nombreBodega:
- *                 type: string
- *                 example: 'Bodega 1'
- *               cantidad:
- *                 type: number
- *                 example: 10
- *         cantidadTotal:
- *           type: number
  */
 router.post('/',[authJwt.verifyToken],createProduct);
 
@@ -414,58 +401,7 @@ router.delete('/:producto_id',[authJwt.verifyToken],deleteProduct);
  */
 router.put('/:producto_id',[authJwt.verifyToken],updateProduct);
 
-/**
- * @swagger
- * /api/products/productBodega/{producto_id}:
- *   put:
- *     summary: Modificar cantidad del producto en bodega especifica
- *     tags:
- *       - Products
- *     parameters:
- *       - in: header
- *         name: x-access-token
- *       - in: path
- *         name: producto_id
- *         description: ID del producto a modificar
- *         schema:
- *           type: string
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               bodega:
- *                 type: string
- *               cantidad:
- *                 type: number
- *                 minimum: 0
- *     responses:
- *       200:
- *         description: Producto modificado exitosamente
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 n:
- *                   type: number
- *                 nModified:
- *                   type: number
- *                 ok:
- *                   type: number
- *       400:
- *         description: El producto no pudo ser modificado
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- */
-router.put('/productBodega/:producto_id',[authJwt.verifyToken],updateProductBodega);
+
 
 /**
  * @swagger

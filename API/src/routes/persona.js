@@ -3,6 +3,7 @@ const {getPersona,getOnePersona, createPersona, deletePersona, updatePersona } =
 const {authJwt} = require('../middlewares');
 const router = Router();
 
+
 /**
  * @swagger
  * /api/persona:

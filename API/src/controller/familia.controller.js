@@ -5,7 +5,7 @@ const familiaSchema = require('../models/familia.schema');
 const getFamilia = async (req, res) => {
     try {
         console.log("getFamilia. checkpoint 1");
-        const familias = await familiaSchema.find({activo : true});
+        const familias = await familiaSchema.find({activo : true},{_id:0,activo:0,__v:0,'estilos._id':0});
 
         //validaciones
         if(familias.length === null || familias.length === undefined ){

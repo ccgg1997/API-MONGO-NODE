@@ -86,6 +86,9 @@ router.get('/', [authJwt.verifyToken], getInventario);
  *               productoId:
  *                 type: string
  *                 description: Identificador del producto.
+ *               nombreProducto:
+ *                 type: string
+ *                 description: Nombre del producto.
  *               cantidad:
  *                 type: number
  *                 description: Cantidad del registro de inventario.

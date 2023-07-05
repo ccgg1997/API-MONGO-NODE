@@ -6,6 +6,10 @@ const produccionSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
+    productoId: {
+        type: String,
+        required: true,
+    },
     personaId: {
         type: String,
         required: true,
@@ -15,7 +19,7 @@ const produccionSchema = new mongoose.Schema({
         required: true,
     },
     fechaInicial: {
-        type: Date,
+        type: String,
         required: true,
     },
     cantidad: {
@@ -23,17 +27,16 @@ const produccionSchema = new mongoose.Schema({
         required: true,
         min: 0
     },
-    cantidadEntregada: {
+    cantidadRecibida: {
         type: Number,
-        required: true,
-        min: 0
+        default: 0,
     },
     activo: {
         type: Boolean,
         default: true
     },
     ultimaFechaEntrega: {
-        type: Date,
+        type: String,
         default: null
     },
     familiaNombre: {
@@ -51,7 +54,11 @@ const produccionSchema = new mongoose.Schema({
                 type: Number,
                 required: true,
                 min: 0
-            }
+            },
+            cantidadRecibida: {
+                type: Number,
+                default: 0,
+            },
         }
     ]
 
@@ -59,6 +66,6 @@ const produccionSchema = new mongoose.Schema({
 
 
 
-module.exports = mongoose.model('produccion', produccionSchema);
+module.exports = mongoose.model('Produccion', produccionSchema);
 
 

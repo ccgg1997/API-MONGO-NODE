@@ -20,6 +20,7 @@ const createPersona = async (req, res) => {
   try {
     const { personaId, nombre, apellido, telefono, direccion, barrio } =
       req.body;
+    console.log(req.body);
     const persona = new Persona({
       personaId,
       nombre,
