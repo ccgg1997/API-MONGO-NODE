@@ -95,6 +95,9 @@ router.get('/', [authJwt.verifyToken], getInventario);
  *               familiaNombre:
  *                 type: string
  *                 description: Familia del producto.
+ *               tipo:
+ *                 type: string
+ *                 description: Tipo de producto.
  *               estilos:
  *                 type: array
  *                 items:

@@ -5,26 +5,24 @@ const router=Router();
 
 /**
  * @swagger
- * /api/products:
+ * /api/products/:
  *   get:
  *     tags: [Products]
- *     summary: Obtener todos los productos activos
- *     description: Devuelve un arreglo con todos los productos activos.
+ *     summary: Obtener un producto por su ID
+ *     description: Devuelve un producto que coincida con el ID proporcionado.
  *     parameters:
  *       - in: header
  *         name: x-access-token
  *         description: Token de acceso a la API.
  *     responses:
  *       '200':
- *         description: Arreglo con los productos activos.
+ *         description: Objeto con el producto encontrado.
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Product'
- *       '500':
- *         description: Error al obtener los productos.
+ *               $ref: '#/components/schemas/Product'
+ *       '404':
+ *         description: Producto no encontrado.
  *         content:
  *           application/json:
  *             schema:
@@ -32,7 +30,20 @@ const router=Router();
  *               properties:
  *                 message:
  *                   type: string
- *                   example: Error al obtener los productos.
+ *                   example: id no existe
+ *                 producto_id:
+ *                   type: string
+ *                   example: '12345'
+ *       '500':
+ *         description: Error al obtener el producto.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Error al obtener el producto.
  * components:
  *   schemas:
  *     Product:
@@ -41,6 +52,10 @@ const router=Router();
  *         producto_id:
  *           type: string
  *           example: '12345'
+ *         tipo:
+ *           type: string
+ *           enum: ['PRODUCTO', 'PAPEL', 'MATERIAPRIMA']
+ *           example: 'PRODUCTO'
  *         nombre:
  *           type: string
  *           example: 'Producto de prueba'
@@ -64,20 +79,6 @@ const router=Router();
  *         activo:
  *           type: boolean
  *           example: true
- *         bodegas:
- *           type: array
- *           items:
- *             type: object
- *             properties:
- *               nombreBodega:
- *                 type: string
- *                 example: 'Bodega 1'
- *               cantidad:
- *                 type: number
- *                 example: 10
- *         cantidadTotal:
- *           type: number
- *           example: 50
  */
 router.get('/', getProduct);
 
@@ -159,20 +160,6 @@ router.get('/', getProduct);
  *         activo:
  *           type: boolean
  *           example: true
- *         bodegas:
- *           type: array
- *           items:
- *             type: object
- *             properties:
- *               nombreBodega:
- *                 type: string
- *                 example: 'Bodega 1'
- *               cantidad:
- *                 type: number
- *                 example: 10
- *         cantidadTotal:
- *           type: number
- *           example: 50
  */
 router.get('/:producto_id',[authJwt.verifyToken],getOneProduct);
 
@@ -362,19 +349,6 @@ router.delete('/:producto_id',[authJwt.verifyToken],deleteProduct);
  *                 type: number
  *               familia_id:
  *                 type: string
- *               bodegas:
- *                 type: array
- *                 items:
- *                   type: object
- *                   properties:
- *                     nombreBodega:
- *                       type: string
- *                     cantidad:
- *                       type: number
- *                       minimum: 0
- *               cantidadTotal:
- *                 type: number
- *                 minimum: 0
  *     responses:
  *       200:
  *         description: Producto modificado exitosamente

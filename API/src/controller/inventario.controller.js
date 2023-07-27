@@ -22,7 +22,7 @@ const getInventario = async (req, res) => {
 // crear un inventario
 const createInventario = async (req, res) => {
   try {
-    const { bodegaId, productoId, cantidad, familiaNombre, estilos } =
+    const { bodegaId, productoId, cantidad, familiaNombre, estilos,nombreProducto,tipo } =
       mayuscula(req.body);
 
     //validacion de datos
@@ -78,6 +78,8 @@ const createInventario = async (req, res) => {
       familiaNombre,
       fecha,
       estilos,
+      nombreProducto,
+      tipo
     });
 
     //guardar el nuevo inventario en mongo db

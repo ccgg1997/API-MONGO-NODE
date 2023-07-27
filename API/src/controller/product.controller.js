@@ -7,7 +7,8 @@ const bodegaSchema = require('../models/bodega.schema');
 const getProduct = (req, res) => {
   try
   {productSchema
-    .find({ activo: true }) // Agrega un filtro para activo=true
+    .find({ activo: true })// Agrega un filtro para activo=true
+    .select('nombre producto_id familia_id tipo') 
     .then((data) => res.json(data))
     .catch((error) => res.json({ message: error }));
   }
