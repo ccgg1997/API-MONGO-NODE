@@ -69,6 +69,7 @@ const isAdmin = async (req, res, next) => {
     const decoded = jwt.verify(token, config.SECRET);
     const roles = decoded.roles;
 
+    console.log("status isAdmin [100]");
     //buscar dentro de los roles si es admin
     for(let i=0;i<roles.length;i++){
         console.log("roles[i]: "+ roles[i]);

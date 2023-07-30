@@ -175,7 +175,7 @@ router.get('/:id', [authJwt.verifyToken, authJwt.isAdmin], getOneFactura);
  *                   type: string
  *                   description: Mensaje de error inter        
 */
-router.post('/', [authJwt.verifyToken, authJwt.isAdmin], createFactura);
+router.post('/', [authJwt.verifyToken], createFactura);
 
 /**
  * @swagger
