@@ -103,9 +103,6 @@ router.get('/',[authJwt.verifyToken],getProduccion)
  *               productoId:
  *                 type: string
  *                 example: "z2345"
- *               produccionId:
- *                 type: string
- *                 example: "12345"
  *               personaId:
  *                 type: string
  *                 example: "67890"

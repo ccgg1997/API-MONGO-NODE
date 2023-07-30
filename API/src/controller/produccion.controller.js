@@ -52,7 +52,7 @@ const createProduccion = async (req, res) => {
       throw new Error("Faltan valores");
     }
     const newProduccion = new Produccion({
-      produccionId: now,
+      produccionId:0,
       productoId,
       personaId,
       nombrePersona,
