@@ -187,18 +187,18 @@ const movEntreBodegas = async (req, res) => {
     });
 
     const cantidadEstilos = estilos.reduce((acc, curr) => {
-      return acc +curr.cantidad
+      return acc +parseInt(curr.cantidad, 10); 
     }, 0);
 
-    inventarioActual.cantidad = inventarioActual.cantidad - cantidadEstilos;
-    inventarioFuturo.cantidad = inventarioFuturo.cantidad + cantidadEstilos;  
+    inventarioActual.cantidad = parseInt(inventarioActual.cantidad, 10) - cantidadEstilos;
+    inventarioFuturo.cantidad = parseInt(inventarioFuturo.cantidad, 10) + cantidadEstilos;  
     console.log(["dentro de movEntreBodegas [001]"],'estilos: ',estilos);
     // Restar los valores de estilo de inventarioActual
     console.log(["dentro de movEntreBodegas [001.1]"], inventarioActual.estilos);
     inventarioActual.estilos = inventarioActual.estilos.map((item) => {
       const estilo = estilos.find((e) => e.nombre === item.nombre);
       if (estilo) {
-        item.cantidad -= estilo.cantidad;
+        item.cantidad -=  parseInt(estilo.cantidad, 10);
       }
       return item;
     });
@@ -210,7 +210,7 @@ const movEntreBodegas = async (req, res) => {
         (item) => item.nombre === estilo.nombre
       );
       if (estiloEncontrado) {
-        estiloEncontrado.cantidad += estilo.cantidad;
+        estiloEncontrado.cantidad +=  parseInt(estilo.cantidad,10);
       } else {
         inventarioFuturo.estilos.push({
           nombre: estilo.nombre,
