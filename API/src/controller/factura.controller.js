@@ -27,6 +27,25 @@ const getOneFactura = async (req, res) => {
         if (id == null || id == undefined || id == "" || id == " ") {
             return res.status(400).json({ message: 'Falta el id' })
         };
+        const factura = await facturaSchema.findOne({ id: id, activo: true });
+        if (factura === undefined || factura === null) {
+            res.status(400).json({ error: 'el id de factura ingresada no existe' })
+            return;
+        }
+
+        const detalleFactura = await detalleFacturaSchema.findOne({ facturaId: id, activo: true });
+        if (detalleFactura === undefined || detalleFactura === null) {
+            res.status(400).json({ error: 'el id de factura ingresada no existe' })
+            return
+        }
+
+        const negocio = await negocioSchema.findOne({ id: factura.negocioId, active: true });
+        if (negocio === undefined || negocio === null) {
+            res.status(400).json({ error: 'negocio no encontrado' })
+            return
+        }
+
+        return res.json({ factura, detalleFactura , negocio });
     } catch (err) {
         console.log(err);
         return res.status(500).json({ error: err.message });
@@ -40,7 +59,9 @@ const createFactura = async (req, res) => {
     session.startTransaction();
     try {
         //obtener datos
+        console.log("negocio " + req.body.negocioId + "tipo" + typeof (req.body.negocioId));
         const { negocioId, total, productos } = mayuscula(req.body);
+        console.log("negocio  " + negocioId + "tipo" + typeof (negocioId));
         const fecha = new Date(moment().tz('America/Bogota').format('YYYY-MM-DD HH:mm:ss'));
         //extrayendo el usuario del token
         const token = req.headers['x-access-token'];

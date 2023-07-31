@@ -61,7 +61,7 @@ const router = Router();
  */
 router.get('/', [authJwt.verifyToken], getFactura);
 
-router.get('/:id', [authJwt.verifyToken, authJwt.isAdmin], getOneFactura);
+router.get('/:id', [authJwt.verifyToken], getOneFactura);
 
 /**
  * @swagger

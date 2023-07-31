@@ -15,7 +15,7 @@ const facturaSchema = new mongoose.Schema({
     required: true
   },
   negocioId: {
-    type: String,
+    type: Number,
     required: true
   },
   negocioNombre: {
