@@ -61,6 +61,88 @@ const router = Router();
  */
 router.get('/', [authJwt.verifyToken], getFactura);
 
+
+/**
+ * @openapi
+ * /api/factura/{id}:
+ *   get:
+ *     summary: Obtener una factura por su ID
+ *     description: Retorna una factura y su detalle asociado por su ID.
+ *     tags: [Factura]
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         description: Token de autenticación JWT.
+ *         type: string
+ *       - in: path
+ *         name: id
+ *         description: ID de la factura que se desea obtener.
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Factura encontrada con éxito
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 factura:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       description: ID de la factura
+ *                     fecha:
+ *                       type: string
+ *                       format: date
+ *                       description: Fecha de la factura
+ *                     clienteId:
+ *                       type: string
+ *                       description: ID del cliente asociado a la factura
+ *                     clienteNombre:
+ *                       type: string
+ *                       description: Nombre del cliente asociado a la factura
+ *                     total:
+ *                       type: number
+ *                       description: Total de la factura
+ *                     activo:
+ *                       type: boolean
+ *                       description: Indica si la factura está activa o no
+ *                     fechaEliminacion:
+ *                       type: string
+ *                       format: date
+ *                       description: Fecha en que se eliminó la factura (si aplica)
+ *                 detalleFactura:
+ *                   type: object
+ *                   properties:
+ *                     // Propiedades del detalle de la factura aquí...
+ *                 negocio:
+ *                   type: object
+ *                   properties:
+ *                     // Propiedades del negocio aquí...
+ *       400:
+ *         description: Error de solicitud
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Descripción del error.
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Descripción del error.
+ */
 router.get('/:id', [authJwt.verifyToken], getOneFactura);
 
 /**
