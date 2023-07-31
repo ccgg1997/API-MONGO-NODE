@@ -153,7 +153,7 @@ const recibirMaterial = async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 };
-
+//console.loggit reset
 const movEntreBodegas = async (req, res) => {
   try {
     console.log(["dentro de movEntreBodegas [000]"]);
