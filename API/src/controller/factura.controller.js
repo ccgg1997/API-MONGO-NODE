@@ -23,29 +23,58 @@ const getFactura = async (req, res) => {
 // Función para obtener una factura
 const getOneFactura = async (req, res) => {
     try {
+        let factura = []
+        let detalleFactura = []
+        let negocio = []
+
         const id = req.params.id;
         if (id == null || id == undefined || id == "" || id == " ") {
             return res.status(400).json({ message: 'Falta el id' })
         };
-        const factura = await facturaSchema.findOne({ id: id, activo: true });
-        if (factura === undefined || factura === null) {
+        const todoFactura = await facturaSchema.findOne({ id: id, activo: true });
+        if (todoFactura === undefined || todoFactura === null) {
             res.status(400).json({ error: 'el id de factura ingresada no existe' })
             return;
         }
 
-        const detalleFactura = await detalleFacturaSchema.findOne({ facturaId: id, activo: true });
-        if (detalleFactura === undefined || detalleFactura === null) {
+        factura = {
+            id: todoFactura.id,
+            fecha: todoFactura.fecha,
+            total: todoFactura.total,
+        }
+
+
+        const todoDetalleFactura = await detalleFacturaSchema.findOne({ facturaId: id, activo: true });
+        if (todoDetalleFactura === undefined || todoDetalleFactura === null) {
             res.status(400).json({ error: 'el id de factura ingresada no existe' })
             return
         }
 
-        const negocio = await negocioSchema.findOne({ id: factura.negocioId, active: true });
+        
+        const productosConTotal = todoDetalleFactura.productos.map((producto) => {
+            const total = producto.cantidad * producto.precio;
+            return { ...producto.toObject(), total };
+        });
+        
+        detalleFactura = {
+            productos: productosConTotal,
+        }
+
+        const todoNegocio = await negocioSchema.findOne({ id: todoFactura.negocioId, active: true });
         if (negocio === undefined || negocio === null) {
             res.status(400).json({ error: 'negocio no encontrado' })
             return
         }
 
-        return res.json({ factura, detalleFactura , negocio });
+        negocio = {
+            nombre: todoNegocio.negocio,
+            duenio: todoNegocio.duenio,
+            telefono: todoNegocio.telefono,
+            barrio: todoNegocio.barrio,
+            direccion: todoNegocio.direccion,
+        }
+
+        return res.json({ factura, detalleFactura, negocio });
     } catch (err) {
         console.log(err);
         return res.status(500).json({ error: err.message });
@@ -59,9 +88,7 @@ const createFactura = async (req, res) => {
     session.startTransaction();
     try {
         //obtener datos
-        console.log("negocio " + req.body.negocioId + "tipo" + typeof (req.body.negocioId));
         const { negocioId, total, productos } = mayuscula(req.body);
-        console.log("negocio  " + negocioId + "tipo" + typeof (negocioId));
         const fecha = new Date(moment().tz('America/Bogota').format('YYYY-MM-DD HH:mm:ss'));
         //extrayendo el usuario del token
         const token = req.headers['x-access-token'];
@@ -153,13 +180,13 @@ const createFactura = async (req, res) => {
         });
 
         //guardar factura y detalle de factura
-        
+
         const facturaGuardada = await factura.save({ session: session });
         await detalleFactura.save({ session: session });
 
         //guardar movimiento  
         await session.commitTransaction();
-        res.status(201).json({ message: 'Factura creada1',id:facturaGuardada.id });
+        res.status(201).json({ message: 'Factura creada1', id: facturaGuardada.id });
         session.endSession();
     } catch (err) {
         await session.abortTransaction();

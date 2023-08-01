@@ -289,6 +289,6 @@ router.post('/', [authJwt.verifyToken], createFactura);
  *       500:
  *         description: Error interno del servidor
  */
-router.delete('/:id', [authJwt.verifyToken, authJwt.isAdmin], deleteFactura);
+router.delete('/:id', [authJwt.verifyToken], deleteFactura);
 
 module.exports = router;  
