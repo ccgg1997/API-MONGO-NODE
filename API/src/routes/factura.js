@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { getFactura,getOneFactura, createFactura,deleteFactura} = require('../controller/factura.controller');
+const { getFactura, getOneFactura, getFacturaByDateRange, createFactura, deleteFactura } = require('../controller/factura.controller');
 const { authJwt } = require('../middlewares');
 const router = Router();
 
@@ -144,6 +144,65 @@ router.get('/', [authJwt.verifyToken], getFactura);
  *                   description: Descripción del error.
  */
 router.get('/:id', [authJwt.verifyToken], getOneFactura);
+
+
+/**
+ * @swagger
+ * /api/factura/{fechaInicio}/{fechaFin}:
+ *   get:
+ *     summary: Obtener facturas por rango de fecha
+ *     tags:
+ *       - Factura
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         description: Token de autenticación JWT.
+ *         type: string
+ *         required: true
+ *       - in: path
+ *         name: fechaInicio
+ *         required: true
+ *         example: 2023-05-01
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: fechaFin
+ *         required: true
+ *         example: 2023-08-31
+ *         schema:
+ *           type: string
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Operación exitosa
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Factura'
+ *       400:
+ *         description: Solicitud incorrecta
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       500:
+ *         description: Error del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ */
+router.get('/:fechaInicio/:fechaFin', [authJwt.verifyToken], getFacturaByDateRange);
+
 
 /**
  * @swagger

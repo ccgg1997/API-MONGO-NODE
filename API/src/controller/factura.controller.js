@@ -81,6 +81,37 @@ const getOneFactura = async (req, res) => {
     }
 };
 
+
+//funcion para obtener facturas por rango de fecha
+const getFacturaByDateRange = async (req, res) => {
+    try {
+        const fechaInicio = req.params.fechaInicio;
+        const fechaFin = req.params.fechaFin;
+        if (isEmpty([fechaInicio, fechaFin])) {
+            return res.status(400).json({ message: 'Faltan datos o datos incorrectos' });
+        }
+
+        const fechaDateInicio = new Date(fechaInicio);
+        const fechaDateFin = new Date(fechaFin);
+        const facturas = await facturaSchema.find({ fecha: { $gte: fechaDateInicio, $lte: fechaDateFin } }).select('fecha negocioNombre total');
+        const facturasDesglosadas = facturas.map((factura) => {
+            const { dia, mes, ano } = desglosarFecha(factura.fecha);
+            return {
+                ...factura.toObject(),
+                dia,
+                mes,
+                ano
+            };
+        });
+        res.json(facturasDesglosadas);
+
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+}
+
+
+
 // Función para crear una factura
 const createFactura = async (req, res) => {
     //iniciar transaccion
@@ -263,4 +294,18 @@ const mayuscula = (datos) => {
     return datosMayusculas;
 }
 
-module.exports = { getFactura, getOneFactura, createFactura, deleteFactura };
+//desglosar una fecha a dia mes y año
+const desglosarFecha = (fecha) => {
+    if(fecha == null || fecha == undefined || fecha == "" || fecha == " "){
+        return null;
+    }
+    const fechaDesglosada = {
+        dia: fecha.getDate(),
+        mes: fecha.getMonth() + 1,
+        ano: fecha.getFullYear(),
+    }
+    return fechaDesglosada;
+}
+
+
+module.exports = { getFactura, getOneFactura, createFactura, deleteFactura,getFacturaByDateRange };
