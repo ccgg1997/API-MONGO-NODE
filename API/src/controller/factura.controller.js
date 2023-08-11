@@ -13,7 +13,11 @@ const jwt = require("jsonwebtoken");
 const config = require("../config");
 const detalleFacturaSchema = require("../models/detalleFactura.schema");
 
-// Función para obtener todas las facturas
+/**
+ * Function to get all invoices
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 const getFactura = async (req, res) => {
     try {
         const facturas = await facturaSchema.find({ activo: true });
@@ -23,7 +27,11 @@ const getFactura = async (req, res) => {
     }
 };
 
-// Función para obtener una factura
+/**
+ * Function to get a single invoice
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 const getOneFactura = async (req, res) => {
     try {
         let factura = [];
@@ -88,7 +96,11 @@ const getOneFactura = async (req, res) => {
     }
 };
 
-//funcion para obtener facturas por rango de fecha
+/**
+ * Function to get invoices by date range
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 const getFacturaByDateRange = async (req, res) => {
     try {
         const fechaInicio = req.params.fechaInicio;
@@ -125,31 +137,36 @@ const getFacturaByDateRange = async (req, res) => {
     }
 };
 
+/**
+ * Retrieves invoices from the last 3 months and performs calculations on the data.
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Promise<void>} - A promise that resolves when the function is finished
+ */
 const getFacturaByLast3Months = async (req, res) => {
     try {
         const now = new Date();
-        const periodo1 = new Date(now)
+        const periodo1 = new Date(now);
         periodo1.setDate(now.getDate() - 89);
-        const finperiodo1 = new Date(now)
+        const finperiodo1 = new Date(now);
         finperiodo1.setDate(now.getDate() - 60);
 
-        const periodo2 = new Date(now)
+        const periodo2 = new Date(now);
         periodo2.setDate(now.getDate() - 59);
-        const finPeriodo2 = new Date(now)
+        const finPeriodo2 = new Date(now);
         finPeriodo2.setDate(now.getDate() - 30);
 
-        const periodo3 = new Date(now)
+        const periodo3 = new Date(now);
         periodo3.setDate(now.getDate() - 29);
-        const finPeriodo3 = new Date(now)
+        const finPeriodo3 = new Date(now);
         finPeriodo3.setDate(now.getDate());
 
         const periodos = [
-            { inicio: periodo1, fin: finperiodo1 },
-            { inicio: periodo2, fin: finPeriodo2 },
-            { inicio: periodo3, fin: finPeriodo3 },
-            { inicio: periodo1, fin: finPeriodo3 }
-
-        ]
+            { nombre: "60-90Dias", inicio: periodo3, fin: finPeriodo3 },
+            { nombre: "30-60Dias", inicio: periodo2, fin: finPeriodo2 },
+            { nombre: "1-30Dias", inicio: periodo1, fin: finperiodo1 },
+            { nombre: "completo", inicio: periodo1, fin: finPeriodo3 }
+        ];
 
         for (let i = 0; i < periodos.length; i++) {
             const clientesFacturas = await facturaSchema.aggregate([
@@ -167,7 +184,8 @@ const getFacturaByLast3Months = async (req, res) => {
                         total: { $sum: "$total" }
                     }
                 }
-            ])
+            ]);
+
             const ventasIntervalo = await facturaSchema.aggregate([
                 {
                     $match: {
@@ -183,19 +201,31 @@ const getFacturaByLast3Months = async (req, res) => {
                         total: { $sum: '$total' }
                     }
                 }
-            ])
-            let subtotal = ventasIntervalo.reduce((acc, venta) => acc + venta.total, 0)
-            periodos[i].clientes = clientesFacturas
-            periodos[i].ventasDia = ventasIntervalo
-            periodos[i].totalVentasDia = subtotal
+            ]);
 
+            // Ordenar las ventas por fecha antes de agruparlas
+            ventasIntervalo.sort((a, b) => a._id.localeCompare(b._id));
+
+            // Crear arreglos separados para fechas y totales
+            const fechas = ventasIntervalo.map(item => item._id);
+            const totales = ventasIntervalo.map(item => item.total);
+
+            // Calcular el subtotal
+            const subtotal = totales.reduce((sum, total) => sum + total, 0);
+
+            periodos[i].clientes = clientesFacturas;
+            periodos[i].ventasDia = [{ fechas, totales: totales }];
+            periodos[i].totalVentasDia = subtotal;
         }
 
-        res.json(periodos)
+        const periodo11 = periodos[0].ventasDia;
+        console.log(periodo11);
+        res.json(periodos);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
-}
+};
+
 
 // Función para crear una factura
 const createFactura = async (req, res) => {
