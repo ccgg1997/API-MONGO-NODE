@@ -39,6 +39,7 @@ app.use('/api/inventario', require('./routes/inventario'));
 app.use('/api/listaprecios', require('./routes/listaprecios'));
 app.use('/api/persona', require('./routes/persona'));
 app.use('/api/produccion', require('./routes/produccion'));
+app.use('/api/eventos', require('./routes/eventos'));
 
 //swagger docs
 swaggerDocs(app,port);
