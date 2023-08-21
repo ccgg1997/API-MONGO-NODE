@@ -328,7 +328,7 @@ const createFactura = async (req, res) => {
                 cantidad: cantidadProducto,
                 categoria: "VENTA",
                 productoId: productoIdProducto,
-                bodegaId: "E03",
+                bodegaId: "B03",
                 tipo: "SALIDA",
                 estilos,
                 usuario,

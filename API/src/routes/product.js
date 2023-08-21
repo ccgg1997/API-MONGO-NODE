@@ -208,6 +208,10 @@ router.get('/:producto_id',[authJwt.verifyToken],getOneProduct);
  *               activo:
  *                 type: boolean
  *                 example: true
+ *               tipo:  # Nuevo campo "tipo" con los requerimientos
+ *                 type: string
+ *                 enum: ['PRODUCTO', 'PAPEL', 'MATERIAPRIMA']
+ *                 required: true
  *     responses:
  *       '200':
  *         description: Objeto con el producto creado.
@@ -257,6 +261,7 @@ router.get('/:producto_id',[authJwt.verifyToken],getOneProduct);
  *           type: boolean
  *           example: true
  */
+
 router.post('/',[authJwt.verifyToken],createProduct);
 
 /**
