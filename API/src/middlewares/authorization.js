@@ -41,8 +41,8 @@ const isModerator = async (req, res, next) => {
     const roles = decoded.roles;
 
     //buscar dentro de los roles si es moderador
-    const role = roles
-    if (role === 'moderator') {
+
+    if (roles=== 'moderator') {
         next();
         return;
     }
@@ -62,7 +62,6 @@ const isAdmin = async (req, res, next) => {
         if (!token) return res.status(403).send({ message: 'No token provided!' });
         const decoded = jwt.verify(token, config.SECRET);
         const role = decoded.roles;
-
         //buscar dentro de los roles si es admin
         if (role === 'admin') {
             next();

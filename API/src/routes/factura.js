@@ -100,7 +100,7 @@ router.get('/', [authJwt.verifyToken], getFactura);
  *                 error:
  *                   type: string
  */
-router.get('/last3Months', [authJwt.verifyToken], getFacturaByLast3Months);
+router.get('/last3Months', [authJwt.verifyToken,authJwt.isAdmin], getFacturaByLast3Months);
 
 
 /**
