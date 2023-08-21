@@ -10,7 +10,7 @@ const userSchema = new mongose.Schema({
     access: { type: Boolean, default: true},
     roles:[{
         ref:"roles",
-        type:mongose.Schema.Types.ObjectId
+        type:String
     }]
 },
 {

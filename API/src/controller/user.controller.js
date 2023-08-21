@@ -22,7 +22,9 @@ const signIn = async (req,res)=>{
         //validaciones de datos 
         const userFound = await userSchema.findOne({id:req.body.id});
         if(userFound===null || userFound===undefined) return res.status(400).json({message:"user not found",token:null});
+        console.log("role" + userFound.roles[0]);
         const role = userFound.roles[0];
+        console.log("role: "+role);
         if(!userFound || !userFound.access) return res.status(400).json({message:"user not found or access denied",token:null});
         const CorrectPassword = await userSchema.comparePassword( req.body.password, userFound.password);
         if(!CorrectPassword) {
@@ -64,11 +66,10 @@ const createUser = async (req, res) => {
 
         if(roles){
            const foundRol = await Role.find({name:{$in:roles}})
-           userData.roles = foundRol.map(rol=>rol._id)
+           userData.roles = foundRol.map(rol=>rol.name)
            console.log("encontro rol")
-        } else{
-            const role = await Role.findOne({name:"user"})
-            userData.roles = [role._id]
+        } else{     
+            userData.roles = ["user"]
             console.log("no encontro rol")
         }
 
