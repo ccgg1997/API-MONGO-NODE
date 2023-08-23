@@ -32,6 +32,8 @@ Mira **Deployment** para conocer como desplegar el proyecto.
   * luego ejecute el comando: docker-compose build o docker compose build 
   * por ultimo ejecute docker compose up
   * ingresa a la api mediante la direccion localhost:5000
+  * ![image](https://github.com/ccgg1997/API-MONGO-NODE/assets/89625031/6e71e200-1c00-4e07-9410-1a0e9e20d1d1)
+
 
 
 ## Construido con 🛠️
