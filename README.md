@@ -25,7 +25,10 @@ Mira **Deployment** para conocer como desplegar el proyecto.
   * Clonar repositorio desde la terminal (git clone https://github.com/ccgg1997/API-MONGO-NODE.git)
   * Entrar al directorio donde se descargo el repositorio (c:user/descargas)
   * En el directorio ingresar a la carpeta del proyecto (API-MONGO-NODE), luego entrar a la carpeta API (c:user/descargas/      API-MONGO-NODE/API)
-  * Deberia ver en su terminal algo asi: DIRECCION_DONDE_DESCARGO_EL_REPO\API-MONGO-NODE\API 
+  * Deberia ver en su terminal algo asi: DIRECCION_DONDE_DESCARGO_EL_REPO\API-MONGO-NODE\API
+  * Cree un archivo .env (con dos variables: mongodburi= "DireccionDeSuBaseDeDatosMongo.com" y retryWrites=true&w=majority)
+    ![image](https://github.com/ccgg1997/API-MONGO-NODE/assets/89625031/18e0971f-9b6d-43bd-ad96-c5531fc07ca3)
+
   * luego ejecute el comando: docker-compose build o docker compose build 
   * por ultimo ejecute docker compose up
   * ingresa a la api mediante la direccion localhost:5000
