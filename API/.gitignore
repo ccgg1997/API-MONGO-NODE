@@ -1,5 +1,5 @@
 #node_modules
-src/node_modules
+API/src/node_modules
 
 #variables de entorno
-.env
+API/.env
