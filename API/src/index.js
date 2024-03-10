@@ -13,7 +13,7 @@ const cors = require('cors');
 require('./database');
 
 //settings
-const port=6000;
+const port=process.env.PORT || 6000;
 app.set('json spaces', 2);  //to format the json    
 app.use(express.static(path.join(__dirname, 'public')));
 
