@@ -1,5 +1,17 @@
 const mongoose = require('mongoose');
 
+const abonoSchema = new mongoose.Schema({
+  fecha: {
+    type: Date,
+    required: true
+  },
+  monto: {
+    type: Number,
+    required: true,
+    min: 0
+  }
+});
+
 const facturaSchema = new mongoose.Schema({
   inc_field: {
     type: Number,
@@ -35,6 +47,7 @@ const facturaSchema = new mongoose.Schema({
     type: Date,
     default: null
   },
+  abonos : [abonoSchema],// Array de los abonos
   pagada: {
     type: Boolean,
     default: false
@@ -42,7 +55,9 @@ const facturaSchema = new mongoose.Schema({
   hexa: {
     type: String
   }
-},{ toJSON: { virtuals: true } });
+},{ toJSON: { virtuals: true } },
+  { toObject: { virtuals: true } }
+);
 
 facturaSchema.methods.incrementar = async function() {
   const ultimo = await this.constructor.findOne({}).sort('-inc_field').exec();
@@ -56,6 +71,11 @@ facturaSchema.pre('save', async function (next) {
     await this.incrementar();
   }
   next();
+});
+
+// Método virtual para calcular el total de todos los abonos
+facturaSchema.virtual('totalAbonos').get(function () {
+  return this.abonos.reduce((total, abono) => total + abono.monto, 0);
 });
 
 module.exports = mongoose.model('Factura', facturaSchema);

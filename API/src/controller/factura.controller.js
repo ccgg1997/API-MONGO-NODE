@@ -52,6 +52,12 @@ const getOneFactura = async (req, res) => {
             id: todoFactura.id,
             fecha: todoFactura.fecha,
             total: todoFactura.total,
+            totalAbonos: todoFactura.totalAbonos,
+            abonos: todoFactura.abonos.map(abono => ({
+                fecha: formatDate(abono.fecha),
+                monto: "$" + formatAmount(abono.monto)
+            })),
+            estado: todoFactura.pagada,
         };
 
         const todoDetalleFactura = await detalleFacturaSchema.findOne({
@@ -363,6 +369,7 @@ const createFactura = async (req, res) => {
             negocioNombre: negocioNombre,
             fecha: fecha,
             total: total,
+
         });
 
         //guardar factura y detalle de factura
@@ -389,11 +396,61 @@ const createFactura = async (req, res) => {
     }
 };
 
+//funcion para abonar a factura
+const abonarFactura = async (req, res) => {
+    try {
+        const { id, abono } = req.body;
+        if (id == null || id == undefined || id == "") {
+            return res.status(400).json({ message: "Falta el id" });
+        }
+        if (abono == null || abono == undefined || abono == "") {
+            return res.status(400).json({ message: "Falta el abono" });
+        }
+
+        //extrayendo el usuario del token
+        const fecha = new Date(
+            moment().tz("America/Bogota").format("YYYY-MM-DD HH:mm:ss")
+        );
+
+        const factura = await facturaSchema.findOne({ id: id, activo: true });
+        if (factura === undefined || factura === null) {
+            res.status(400).json({ error: "el id de factura ingresado no existe" });
+        }
+
+        // Validar que el abono sea mayor a cero
+        if (abono <= 0) {
+            return res.status(400).json({ error: "El abono debe ser mayor a cero" });
+        }
+
+        // Validar que la factura no esté pagada
+        if (factura.total - factura.totalAbonos <= 0) {
+            return res.status(400).json({ error: "La factura ya está pagada" });
+        }
+
+        // Agregar el nuevo abono a la factura
+        factura.abonos.push({ fecha: fecha, monto: abono });
+        await factura.save(); // Guardar la factura para que el nuevo abono se aplique
+
+        // Calcular el nuevo valor de totalAbonos
+        const totalAbonos = factura.abonos.reduce((total, abono) => total + abono.monto, 0);
+
+        // Actualizar el estado de la factura
+        factura.pagada = totalAbonos >= factura.total;
+        await factura.save();
+
+        res.json(factura);
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: err.message });
+    }
+};
+
+
 //funcion para eliminar factura
 const deleteFactura = async (req, res) => {
     try {
         const id = req.params.id.toUpperCase();
-        if (id == null || id == undefined || id == "" || id == " ") {
+        if (id == null || id == undefined || id == "") {
             return res.status(400).json({ message: "Falta el id" });
         }
 
@@ -464,6 +521,28 @@ const mayuscula = (datos) => {
     return datosMayusculas;
 };
 
+// Formatear la fecha y hora en el formato dd,mm,aaaa hh:mm:ss
+const formatDate = (date) => {
+    const day = String(date.getDate()).padStart(2, '0'); //el padStart se usa para que si el dia es menor a 10 se le añada un 0 al inicio
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+};
+
+// Formatear el monto por puntos
+const formatAmount = (amount) => {
+    // Formatear el número con dos decimales y añadir separadores de miles
+    let formattedAmount = amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+    // Eliminar los ceros decimales al final
+    formattedAmount = formattedAmount.replace(/\.?0+$/, '');
+
+    return formattedAmount;
+};
+
 //desglosar una fecha a dia mes y año
 const desglosarFecha = (fecha) => {
     if (fecha == null || fecha == undefined || fecha == "" || fecha == " ") {
@@ -481,6 +560,7 @@ module.exports = {
     getFactura,
     getOneFactura,
     createFactura,
+    abonarFactura,
     deleteFactura,
     getFacturaByDateRange,
     getFacturaByLast3Months,

@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { getFactura, getOneFactura, getFacturaByDateRange, createFactura, deleteFactura, getFacturaByLast3Months } = require('../controller/factura.controller');
+const { getFactura, getOneFactura, getFacturaByDateRange, createFactura,abonarFactura , deleteFactura, getFacturaByLast3Months } = require('../controller/factura.controller');
 const { authJwt } = require('../middlewares');
 const router = Router();
 
@@ -353,6 +353,67 @@ router.get('/:fechaInicio/:fechaFin', [authJwt.verifyToken], getFacturaByDateRan
  *                   description: Mensaje de error inter        
 */
 router.post('/', [authJwt.verifyToken], createFactura);
+
+/**
+ * @swagger
+ * /api/factura/abonar:
+ *   put:
+ *     summary: Abonar a una factura
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *     tags:
+ *       - Factura
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               facturaId:
+ *                 type: string
+ *                 description: Identificador único de la factura
+ *                 example: e11
+ *               abono:
+ *                 type: number
+ *                 description: Monto a abonar a la factura
+ *                 example: 5000
+ *     responses:
+ *       '200':
+ *         description: Abono realizado con éxito
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Mensaje de confirmación del abono
+ *                   example: Abono realizado
+ *       '400':
+ *         description: Faltan datos o tipo de dato incorrecto en la petición
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Mensaje de error explicando qué campo de la petición es incorrecto o falta
+ *                   example: Faltan datos
+ *       '500':
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Mensaje de error interno
+ */
+router.put('/abonar', [authJwt.verifyToken], abonarFactura);
 
 /**
  * @swagger
